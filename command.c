@@ -1,5 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/wait.h>
 #include <termios.h>
 
 #define YELLOW  "\033[33m"      /* Yellow */
@@ -24,9 +32,14 @@ void disable_waiting_for_enter(void)
     atexit(restore_terminal_settings); /* Make sure settings will be restored when program ends  */
 }
 
-int main()
+int main(void)
 {
+    int fd_to_mx;
     int ch;
+    
+    char * myfifo = "/tmp/myfifo";
+    mkfifo(myfifo, 0666);
+    fd_to_mx = open(myfifo, O_WRONLY);
 
     disable_waiting_for_enter();
     
@@ -40,24 +53,36 @@ int main()
     
 	/* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
-	while (1) {
-        ch = getchar();
-        if (ch != 'w' && ch != 's' && ch != 'a' && ch != 'd' && ch != 'x' && ch != 'z')
-        printf("Wrong command!\n");
-        if (ch == 'w')
-        printf("Increase Z\n");
-        if (ch == 's')
-        printf("Decrease Z\n");
-        if (ch == 'a')
-        printf("Decrease X\n");
-        if (ch == 'd')
-        printf("Increase X\n");
-        if (ch == 'x')
-        printf("Stop X\n");
-        if (ch == 'z')
-        printf("Stop Z\n");
-        
-	}
-
+	while (1){
+		ch = getchar();
+		if (ch != 'w' && ch != 's' && ch != 'a' && ch != 'd' && ch != 'x' && ch != 'z')
+		printf("Wrong command!\n");
+		if (ch == 'w'){
+		printf("Increase Z\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+		if (ch == 's'){
+		printf("Decrease Z\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+		if (ch == 'a'){
+		printf("Decrease X\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+		if (ch == 'd'){
+		printf("Increase X\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+		if (ch == 'x'){
+		printf("Stop X\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+		if (ch == 'z'){
+		printf("Stop Z\n");
+		write(fd_to_mx, &ch, sizeof(ch));
+		}
+        	
+        }
+        close(fd_to_mx);
 	return 0;
 }
