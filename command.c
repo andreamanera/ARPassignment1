@@ -30,7 +30,7 @@ int main()
 
     disable_waiting_for_enter();
     
-    printf("This is a robot simulator which simulates a joist. If want to move it, press the following buttons on the keyboard!!\n");
+    printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard!!\n");
     printf(YELLOW "To move UP, press W" RESET "\n");
     printf(YELLOW "To move DOWN, press S" RESET "\n");
     printf(YELLOW "To move RIGHT, press D" RESET "\n");
