@@ -30,15 +30,15 @@ int main()
 
     disable_waiting_for_enter();
     
-    printf("This is a robot simulator in which you could move the hoist through some buttons on the keyboard!!\n");
-    printf(YELLOW "To move UP, press w" RESET "\n");
-    printf(YELLOW "To move DOWN, press s" RESET "\n");
-    printf(YELLOW "To move RIGHT, press d" RESET "\n");
-    printf(YELLOW "To move LEFT, press a" RESET "\n");
-    printf(YELLOW "To STOP z axis, press z" RESET "\n");
-    printf(YELLOW "To STOP x axis, press x" RESET "\n");
+    printf("This is a robot simulator which simulates a joist. If want to move it, press the following buttons on the keyboard!!\n");
+    printf(YELLOW "To move UP, press W" RESET "\n");
+    printf(YELLOW "To move DOWN, press S" RESET "\n");
+    printf(YELLOW "To move RIGHT, press D" RESET "\n");
+    printf(YELLOW "To move LEFT, press A" RESET "\n");
+    printf(YELLOW "To STOP z axis, press Z" RESET "\n");
+    printf(YELLOW "To STOP x axis, press X" RESET "\n");
     
-
+	/* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	while (1) {
         ch = getchar();
