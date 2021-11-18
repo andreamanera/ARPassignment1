@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <termios.h>
 
+#define YELLOW  "\033[33m"      /* Yellow */
+#define RESET "\033[0m"
+
 static struct termios oldt;
 
 void restore_terminal_settings(void)
@@ -26,6 +29,15 @@ int main()
     int ch;
 
     disable_waiting_for_enter();
+    
+    printf("This is a robot simulator in which you could move the robot through some buttons on the keyboard!!\n");
+    printf(YELLOW "To move UP, press w" RESET "\n");
+    printf(YELLOW "To move DOWN, press s" RESET "\n");
+    printf(YELLOW "To move RIGHT, press d" RESET "\n");
+    printf(YELLOW "To move LEFT, press a" RESET "\n");
+    printf(YELLOW "To STOP z axis, press z" RESET "\n");
+    printf(YELLOW "To STOP x axis, press x" RESET "\n");
+    
 
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	while (1) {
