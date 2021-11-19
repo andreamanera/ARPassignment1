@@ -23,9 +23,9 @@ int main(void){
 	
 	/* FIFO that writes to inspection console */
 	int fd_to_insp;
-	char * myfifo2 = "/tmp/myfifo2x"; 
-	mkfifo(myfifo2, 0666); 
-	fd_to_insp = open(myfifo2, O_WRONLY);
+	char * myfifo2x = "/tmp/myfifo2x"; 
+	mkfifo(myfifo2x, 0666); 
+	fd_to_insp = open(myfifo2x, O_WRONLY);
 	
 	float x = 0.0;
 	float x_end = 10.0;

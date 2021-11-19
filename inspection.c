@@ -18,13 +18,13 @@ int main(void){
 	int fd_from_mx;
 	int fd_from_mz;
 	
-	char * myfifox = "/tmp/myfifo2x"; 
-	mkfifo(myfifox, 0666); 
-	fd_from_mx = open(myfifox, O_RDONLY);
+	char * myfifo2x = "/tmp/myfifo2x"; 
+	mkfifo(myfifo2x, 0666); 
+	fd_from_mx = open(myfifo2x, O_RDONLY);
 	
-	char * myfifoz = "/tmp/myfifo2z"; 
-	mkfifo(myfifoz, 0666); 
-	fd_from_mz = open(myfifoz, O_RDONLY);
+	char * myfifo2z = "/tmp/myfifo2z"; 
+	mkfifo(myfifo2z, 0666); 
+	fd_from_mz = open(myfifo2x, O_RDONLY);
 	
 	while(1){
 		read(fd_from_mx, &x, sizeof(x));
@@ -33,7 +33,11 @@ int main(void){
 		printf("%f\n", x);
 		printf("%f\n", z);
 		printf("\n");
+		fflush(stdout);
 	}
+	close(fd_from_mx);
+	close(fd_from_mz);
+	
 	return 0;
 }
 	
