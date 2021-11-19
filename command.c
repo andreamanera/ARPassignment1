@@ -34,12 +34,12 @@ void disable_waiting_for_enter(void)
 
 int main(void)
 {
-    int fd_to_mx;
+    int fd_to_m;
     int ch;
     
     char * myfifo = "/tmp/myfifo";
     mkfifo(myfifo, 0666);
-    fd_to_mx = open(myfifo, O_WRONLY);
+    fd_to_m = open(myfifo, O_WRONLY);
 
     disable_waiting_for_enter();
     
@@ -59,30 +59,30 @@ int main(void)
 		printf("Wrong command!\n");
 		if (ch == 'w'){
 		printf("Increase Z\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
 		if (ch == 's'){
 		printf("Decrease Z\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
 		if (ch == 'a'){
 		printf("Decrease X\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
 		if (ch == 'd'){
 		printf("Increase X\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
 		if (ch == 'x'){
 		printf("Stop X\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
 		if (ch == 'z'){
 		printf("Stop Z\n");
-		write(fd_to_mx, &ch, sizeof(ch));
+		write(fd_to_m, &ch, sizeof(ch));
 		}
         	
         }
-        close(fd_to_mx);
+        close(fd_to_m);
 	return 0;
 }

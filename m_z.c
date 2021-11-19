@@ -23,28 +23,28 @@ int main(void){
 	
 	/* FIFO that writes to inspection console */
 	int fd_to_insp;
-	char * myfifo2 = "/tmp/myfifo2x"; 
+	char * myfifo2 = "/tmp/myfifo2z"; 
 	mkfifo(myfifo2, 0666); 
 	fd_to_insp = open(myfifo2, O_WRONLY);
 	
-	float x = 0.0;
-	float x_end = 10.0;
+	float z = 0.0;
+	float z_end = 10.0;
 	float error;
 	
 	/* rimango nel while e ogni volta eseguo solo un if e poi il ciclo si ripete */
 	while(1){
 	read(fd_from_comm, &ch, sizeof(ch));
 	error = (float) rand() /(float) (RAND_MAX/0.025);
-	if (ch == 'a' && x > 0.25){
-		x -= 0.25;
-		x = x + error; 
-		write(fd_to_insp, &x, sizeof(x));
+	if (ch == 'a' && z > 0.25){
+		z -= 0.25;
+		z = z + error; 
+		write(fd_to_insp, &z, sizeof(z));
 		sleep(2.5);		
 		}
-	if (ch == 'd' && x < 9.75){
-		x += 0.25;
-		x = x + error;
-		write(fd_to_insp, &x, sizeof(x));	
+	if (ch == 'd' && z < 9.75){
+		z += 0.25;
+		z = z + error;
+		write(fd_to_insp, &z, sizeof(z));	
 		sleep(2.5);		
 		}
 	}
@@ -53,4 +53,3 @@ int main(void){
 	close(fd_to_insp);
 	return 0;
 	}
-	
