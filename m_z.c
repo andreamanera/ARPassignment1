@@ -15,7 +15,7 @@
 int main(void)
 {
 	
-	int ch;
+	char ch;
 	int fd_from_comm;
 	int fd_to_insp;
 	
@@ -24,17 +24,14 @@ int main(void)
 	char * myfifo = "/tmp/myfifo"; 
 	mkfifo(myfifo, 0666); 
 
-	
 	/* FIFO that writes to inspection console */
 	
 	char * myfifo3 = "/tmp/myfifo3"; 
 	mkfifo(myfifo3, 0666); 
 	
-	
 	double z = 0.0;
 	double z_end = 10.0;
 	double error;
-	
 	
 	/* rimango nel while e ogni volta eseguo solo un if e poi il ciclo si ripete */
 	

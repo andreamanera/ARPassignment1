@@ -14,7 +14,6 @@
 int main(void)
 {
 	
-	
 	double x;
 	double z;
 	int fd_from_mx;
@@ -23,11 +22,9 @@ int main(void)
 	char * myfifo2 = "/tmp/myfifo2"; 
 	mkfifo(myfifo2, 0666); 
 	
-	
 	char * myfifo3 = "/tmp/myfifo3"; 
 	mkfifo(myfifo3, 0666); 
 
-	
 	while(1){
 		
 		fd_from_mx = open(myfifo2, O_RDONLY);

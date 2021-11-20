@@ -13,35 +13,34 @@
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET "\033[0m"
 
-static struct termios oldt;
-
-void restore_terminal_settings(void)
-{
-    tcsetattr(0, TCSANOW, &oldt);  /* Apply saved settings */
-}
-
-void disable_waiting_for_enter(void)
-{
-    struct termios newt;
-
-    /* Make terminal read 1 char at a time */
-    tcgetattr(0, &oldt);  /* Save terminal settings */
-    newt = oldt;  /* Init new settings */
-    newt.c_lflag &= ~(ICANON | ECHO);  /* Change settings */
-    tcsetattr(0, TCSANOW, &newt);  /* Apply settings */
-    atexit(restore_terminal_settings); /* Make sure settings will be restored when program ends  */
-}
-
 int main(void)
 {
+
+	static struct termios oldt;
+
+	void restore_terminal_settings(void)
+	{
+		tcsetattr(0, TCSANOW, &oldt);  /* Apply saved settings */
+	}
+
+	void disable_waiting_for_enter(void)
+	{
+		struct termios newt;
+
+		/* Make terminal read 1 char at a time */
+		tcgetattr(0, &oldt);  /* Save terminal settings */
+		newt = oldt;  /* Init new settings */
+		newt.c_lflag &= ~(ICANON | ECHO);  /* Change settings */
+		tcsetattr(0, TCSANOW, &newt);  /* Apply settings */
+		atexit(restore_terminal_settings); /* Make sure settings will be restored when program ends  */
+	}
+	
     int fd_to_m;
     int ch;
-    
     
     char * myfifo = "/tmp/myfifo";
     mkfifo(myfifo, 0666);
 
-    
     printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard.\n");
     printf(YELLOW "To move UP, press W" RESET "\n");
     printf(YELLOW "To move DOWN, press S" RESET "\n");
@@ -50,12 +49,11 @@ int main(void)
     printf(YELLOW "To STOP z axis, press Z" RESET "\n");
     printf(YELLOW "To STOP x axis, press X" RESET "\n");
     
-    
     disable_waiting_for_enter();
     
-    
-	/* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
+    /* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
+	
 	while (1){
 	
 		fd_to_m = open(myfifo, O_WRONLY);
@@ -96,7 +94,6 @@ int main(void)
 		}
 		
 		close(fd_to_m);
-		
 	}
 	
 	return 0;

@@ -19,19 +19,16 @@ int main(void)
 	int fd_from_comm;
 	int fd_to_insp;
 	
-	
 	/* FIFO that reads from command console */
 	
 	char * myfifo = "/tmp/myfifo"; 
 	mkfifo(myfifo, 0666); 
-	
 	
 	/* FIFO that write to inspection console */
 
 	char * myfifo2 = "/tmp/myfifo2"; 
 	mkfifo(myfifo2, 0666); 
 
-	
 	double x = 0.0;
 	double x_end = 10.0;
 	double error;
