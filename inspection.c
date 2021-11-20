@@ -11,32 +11,38 @@
 #include <time.h>
 
 
-int main(void){
+int main(void)
+{
 	
-	float x;
-	float z;
+	
+	double x;
+	double z;
 	int fd_from_mx;
 	int fd_from_mz;
 	
-	char * myfifo2x = "/tmp/myfifo2x"; 
-	mkfifo(myfifo2x, 0666); 
-	fd_from_mx = open(myfifo2x, O_RDONLY);
+	char * myfifo2 = "/tmp/myfifo2"; 
+	mkfifo(myfifo2, 0666); 
 	
-	char * myfifo2z = "/tmp/myfifo2z"; 
-	mkfifo(myfifo2z, 0666); 
-	fd_from_mz = open(myfifo2x, O_RDONLY);
+	
+	char * myfifo3 = "/tmp/myfifo3"; 
+	mkfifo(myfifo3, 0666); 
+
 	
 	while(1){
+		
+		fd_from_mx = open(myfifo2, O_RDONLY);
+		fd_from_mz = open(myfifo3, O_RDONLY);
+			
 		read(fd_from_mx, &x, sizeof(x));
 		read(fd_from_mz, &z, sizeof(z));
-		
+			
 		printf("%f\n", x);
 		printf("%f\n", z);
-		printf("\n");
 		fflush(stdout);
+		
+		close(fd_from_mx);
+		close(fd_from_mz);
 	}
-	close(fd_from_mx);
-	close(fd_from_mz);
 	
 	return 0;
 }

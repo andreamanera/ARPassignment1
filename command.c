@@ -37,13 +37,12 @@ int main(void)
     int fd_to_m;
     int ch;
     
+    
     char * myfifo = "/tmp/myfifo";
     mkfifo(myfifo, 0666);
-    fd_to_m = open(myfifo, O_WRONLY);
 
-    disable_waiting_for_enter();
     
-    printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard!!\n");
+    printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard.\n");
     printf(YELLOW "To move UP, press W" RESET "\n");
     printf(YELLOW "To move DOWN, press S" RESET "\n");
     printf(YELLOW "To move RIGHT, press D" RESET "\n");
@@ -51,38 +50,54 @@ int main(void)
     printf(YELLOW "To STOP z axis, press Z" RESET "\n");
     printf(YELLOW "To STOP x axis, press X" RESET "\n");
     
+    
+    disable_waiting_for_enter();
+    
+    
 	/* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	while (1){
+	
+		fd_to_m = open(myfifo, O_WRONLY);
+		
 		ch = getchar();
+		
 		if (ch != 'w' && ch != 's' && ch != 'a' && ch != 'd' && ch != 'x' && ch != 'z')
-		printf("Wrong command!\n");
+			printf("Wrong command!\n");
+		
 		if (ch == 'w'){
-		printf("Increase Z\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Increase Z\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
+		
 		if (ch == 's'){
-		printf("Decrease Z\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Decrease Z\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
+		
 		if (ch == 'a'){
-		printf("Decrease X\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Decrease X\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
+		
 		if (ch == 'd'){
-		printf("Increase X\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Increase X\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
+		
 		if (ch == 'x'){
-		printf("Stop X\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Stop X\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
+		
 		if (ch == 'z'){
-		printf("Stop Z\n");
-		write(fd_to_m, &ch, sizeof(ch));
+			printf("Stop Z\n");
+			write(fd_to_m, &ch, sizeof(ch));
 		}
-        	
-        }
-        close(fd_to_m);
+		
+		close(fd_to_m);
+		
+	}
+	
 	return 0;
 }
