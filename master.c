@@ -59,34 +59,35 @@ int main(){
 
 	mkfifo(fd_comm_to_m_x, 0666);
 	if(mkfifo(fd_comm_to_m_x, 0666)==-1){
-       if (errno != EEXIST){
-         perror("Error creating named fifo\n");
-         exit (1);
-       }
-    } 
+		if (errno != EEXIST){
+			perror("Error creating named fifo\n");
+			exit (1);
+		}
+	} 
+	
 	mkfifo(fd_comm_to_m_z, 0666);
 	if(mkfifo(fd_comm_to_m_z, 0666)==-1){
-       if (errno != EEXIST){
-         perror("Error creating named fifo\n");
-         exit (1);
-       }
-    } 
+		if (errno != EEXIST){
+			perror("Error creating named fifo\n");
+			exit (1);
+		}
+	} 
           
 	mkfifo(fd_to_insp_x, 0666);
 	if(mkfifo(d_to_insp_x, 0666)==-1){
-       if (errno != EEXIST){
-         perror("Error creating named fifo\n");
-         exit (1);
-       }
-    } 
+		if (errno != EEXIST){
+			perror("Error creating named fifo\n");
+			exit (1);
+		}
+	} 
     
 	mkfifo(fd_to_insp_z, 0666);
 	if(mkfifo(fd_to_insp_z, 0666)==-1){
-       if (errno != EEXIST){
-         perror("Error creating named fifo\n");
-         exit (1);
-       }
-    } 
+		if (errno != EEXIST){
+			perror("Error creating named fifo\n");
+			exit (1);
+		}
+	} 
 
 	wait(NULL);
 
