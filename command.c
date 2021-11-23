@@ -34,13 +34,7 @@ int main(void)
 		tcsetattr(0, TCSANOW, &newt);  /* Apply settings */
 		atexit(restore_terminal_settings); /* Make sure settings will be restored when program ends  */
 	}
-	
-    int fd_to_m;
-    int ch;
     
-    char * myfifo = "/tmp/myfifo";
-    mkfifo(myfifo, 0666);
-
     printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard.\n");
     printf(YELLOW "To move UP, press W" RESET "\n");
     printf(YELLOW "To move DOWN, press S" RESET "\n");
@@ -51,12 +45,25 @@ int main(void)
     
     disable_waiting_for_enter();
     
+   	int fd_to_mx;
+    int fd_to_mz;
+    
+    int d = 1;
+    int a = 2;
+    int w = 4;
+    int s = 5;
+    int z = 6;
+    int x = 3;
+    
+    char ch;
+    
     /* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	
 	while (1){
 	
-		fd_to_m = open(myfifo, O_WRONLY);
+		fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
+		fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
 		
 		ch = getchar();
 		
@@ -65,35 +72,36 @@ int main(void)
 		
 		if (ch == 'w'){
 			printf("Increase Z\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_mz, &w, sizeof(ch));
 		}
 		
 		if (ch == 's'){
 			printf("Decrease Z\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_mz, &s, sizeof(ch));
 		}
 		
 		if (ch == 'a'){
 			printf("Decrease X\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_mx, &a, sizeof(ch));
 		}
 		
 		if (ch == 'd'){
 			printf("Increase X\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_mx, &d, sizeof(ch));
 		}
 		
 		if (ch == 'x'){
 			printf("Stop X\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_m, &x, sizeof(ch));
 		}
 		
 		if (ch == 'z'){
 			printf("Stop Z\n");
-			write(fd_to_m, &ch, sizeof(ch));
+			write(fd_to_m, &z, sizeof(ch));
 		}
 		
-		close(fd_to_m);
+		close(fd_to_mx);
+		close(fd_to_mx);
 	}
 	
 	return 0;
