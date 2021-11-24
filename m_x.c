@@ -10,14 +10,15 @@
 #include <sys/wait.h>
 
 char ch;
+double x = 0.0;
 
 /* signals that we send from inspection needed to stop/reset motor x */
 
 void handler(int sig){
-	if(sig==SIGUSR1){
+	if(sig == SIGUSR1){
 		ch = 'x';
 	}
-	if(sig==SIGUSR2){
+	if(sig == SIGUSR2){
 		
 		x = 0.0;
 		ch = 'z';
@@ -35,30 +36,31 @@ int main(int argc, char* argv[])
 	int fd_to_insp;
 	int retval;
 	double step = 0.1;
-	double x = 0.0;
 	struct timeval tv;
 	struct sigaction sa; 
 	fd_set rdset;
 
 	/* pipes opening for reading from command and writing to insp */
 	
-	fd_from_comm = open(argv[1], O_RDONLY);
+	fd_from_comm = open("fd_comm_to_m_x", O_RDONLY);
 	fd_to_insp = open("fd_to_insp_x", O_WRONLY);
 		
 			
 	if(fd_from_comm == -1){
-		printf("Error opening FIFO from command to motor x");
+		printf("Error opening FIFO from command to motor x\n");
 		return(1);
 	}
 	
-	if(fd_mx_to_ins == -1){
-		printf("Error opening FIFO from motor x to inspection");
+	if(fd_to_insp == -1){
+		printf("Error opening FIFO from motor x to inspection\n");
 		return(1);
 	}
 	
 	while(1){
 		
 		double error = (double) rand() /(double) (RAND_MAX/0.001);
+		
+		/* only in motor the signal will change something */
 		
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_handler=&handler;
@@ -128,11 +130,11 @@ int main(int argc, char* argv[])
 		if (x < 0.0) 
 			x = 0.0;
 		
-		write(fd_mx_to_ins, &x, sizeof(x));;
+		write(fd_to_insp, &x, sizeof(x));
 	}
 	
 	close(fd_from_comm);
-	close(fd_to_insp)
+	close(fd_to_insp);
 	
 	return 0;
 }

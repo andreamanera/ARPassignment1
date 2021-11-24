@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 
 char ch;
+double z = 0.0;
 
 /* signals that we send from inspection needed to stop/reset motor x */
 
@@ -19,7 +20,7 @@ void handler(int sig){
 	}
 	if(sig==SIGUSR2){
 		
-		x = 0.0;
+		z = 0.0;
 		ch = 'z';
 	}
 }
@@ -35,7 +36,6 @@ int main(int argc, char* argv[])
 	int fd_to_insp;
 	int retval;
 	double step = 0.1;
-	double x = 0.0;
 	struct timeval tv;
 	struct sigaction sa; 
 	fd_set rdset;
@@ -47,12 +47,12 @@ int main(int argc, char* argv[])
 		
 			
 	if(fd_from_comm == -1){
-		printf("Error opening FIFO from command to motor z");
+		printf("Error opening FIFO from command to motor z\n");
 		return(1);
 	}
 	
-	if(fd_mx_to_ins == -1){
-		printf("Error opening FIFO from motor z to inspection");
+	if(fd_to_insp == -1){
+		printf("Error opening FIFO from motor z to inspection\n");
 		return(1);
 	}
 	
@@ -115,7 +115,6 @@ int main(int argc, char* argv[])
 					
 					sleep(1);
 			break;
-		}
 		
 			case 120: // case x
 			
@@ -129,11 +128,11 @@ int main(int argc, char* argv[])
 		if (z < 0.0) 
 			z = 0.0;
 		
-		write(fd_mx_to_ins, &z, sizeof(x));;
+		write(fd_to_insp, &z, sizeof(z));
 	}
 	
 	close(fd_from_comm);
-	close(fd_to_insp)
+	close(fd_to_insp);
 	
 	return 0;
 }
