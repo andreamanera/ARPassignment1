@@ -62,47 +62,55 @@ int main(void)
 	
 	while (1){
 	
-		fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
-		fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
-		
+        // opens pipe to write the commands 
+        
+        fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
+        fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
+        
 		ch = getchar();
 		
-		if (ch != 'w' && ch != 's' && ch != 'a' && ch != 'd' && ch != 'x' && ch != 'z')
-			printf("Wrong command!\n");
-		
-		if (ch == 'w'){
-			printf("Increase Z\n");
-			write(fd_to_mz, &w, sizeof(ch));
+		switch(ch)
+		{
+			case 119: // case w
+		    printf("Z increase\n");
+		    fflush(stdout);
+		    write(fd_to_mz, &ch, sizeof(ch));
+		    	break;
+
+			case 115: // case s
+		    printf("Z decrease\n");
+		    fflush(stdout);
+		    write(fd_to_mz, &ch, sizeof(ch));
+		    	break;
+
+		    case 122 :// case z
+		    printf("Z stop\n");
+		    fflush(stdout);
+		    write(fd_to_mz, &ch, sizeof(ch));
+		    	break;
+		                
+		    case 100: // case d
+		    printf("X increase\n");
+		    fflush(stdout);
+		    write(fd_to_mx, &ch, sizeof(ch));
+		    	break;
+
+		    case 97: // case a
+		    printf("X decrease\n");
+		    fflush(stdout);
+		    write(fd_to_mx, &ch, sizeof(ch));
+		    	break;
+
+		    case 120: // case x
+		    printf("X stop\n");
+		    fflush(stdout);
+		    write(fd_to_mx, &ch, sizeof(ch));
+		    	break;
 		}
-		
-		if (ch == 's'){
-			printf("Decrease Z\n");
-			write(fd_to_mz, &s, sizeof(ch));
-		}
-		
-		if (ch == 'a'){
-			printf("Decrease X\n");
-			write(fd_to_mx, &a, sizeof(ch));
-		}
-		
-		if (ch == 'd'){
-			printf("Increase X\n");
-			write(fd_to_mx, &d, sizeof(ch));
-		}
-		
-		if (ch == 'x'){
-			printf("Stop X\n");
-			write(fd_to_m, &x, sizeof(ch));
-		}
-		
-		if (ch == 'z'){
-			printf("Stop Z\n");
-			write(fd_to_m, &z, sizeof(ch));
-		}
-		
+				 
 		close(fd_to_mx);
-		close(fd_to_mx);
+		close(fd_to_mz);
 	}
-	
+
 	return 0;
 }
