@@ -38,20 +38,15 @@ int main(){
 	
 	/* pipe's declaration */
 	
-	char *fd_comm_to_m_x = "/tmp/x";
-	char *fd_comm_to_m_z = "/tmp/z";
-	char *fd_to_insp_x = "/tmp/inspx";
-	char *fd_to_insp_z = "/tmp/inspz";
-
-	mkfifo(fd_comm_to_m_x, 0666);
-	mkfifo(fd_comm_to_m_z, 0666);
-	mkfifo(fd_to_insp_x, 0666);
-	mkfifo(fd_to_insp_z, 0666);
+	mkfifo("/tmp/x", 0666);
+	mkfifo("/tmp/z", 0666);
+	mkfifo("/tmp/inspx", 0666);
+	mkfifo("/tmp/inspz", 0666);
 	
 	/* arguments that i have to pass to the process that i want to execute through master's child */
 	
-	char *arg_list_m_x[] = { "./m_x", fd_comm_to_m_x , NULL };
-	char *arg_list_m_z[] = { "./m_z", fd_comm_to_m_z , NULL };
+	char *arg_list_m_x[] = { "./m_x", "/tmp/x", NULL };
+	char *arg_list_m_z[] = { "./m_z", "/tmp/z" , NULL };
 	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", (char*)NULL };
 	
 	/* fork to create various child processes */
@@ -76,10 +71,10 @@ int main(){
 
 	fflush(stdout);
 	
-	unlink("fd_comm_to_m_x");
-	unlink("fd_comm_to_m_z");
-	unlink("fd_to_insp_x");
-	unlink("fd_to_insp_z");
+	unlink("/tmp/x");
+	unlink("/tmp/z");
+	unlink("/tmp/inspx");
+	unlink("/tmp/inspz");
 	
 	return 0;
 

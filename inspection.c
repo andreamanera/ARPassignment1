@@ -67,7 +67,6 @@ int main(int argc, char* argv[]){
 	pid_motor_z = atoi(argv[2]);
 
 	while(1){
-		
 		FD_ZERO(&rdset);
 		FD_SET(fd_from_mx, &rdset);
 		FD_SET(fd_from_mz, &rdset);
