@@ -10,9 +10,9 @@
 #include <termios.h>
 #include <time.h>
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]){
 
+	printf("Inspection console, press q to stop the hoist and r to reset\n");
 	static struct termios oldt;
 
 	void restore_terminal_settings(void)
@@ -52,12 +52,12 @@ int main(int argc, char* argv[])
 	fd_from_mz = open("fd_to_insp_z", O_RDONLY);
 			
 	if(fd_from_mx == -1){
-		printf("Error opening FIFO from command to motor x");
+		printf("Error opening FIFO from motor x to inspection");
 		return(1);
 	}
 	
 	if(fd_from_mz == -1){
-		printf("Error opening FIFO from motor x to inspection");
+		printf("Error opening FIFO from motor z to inspection");
 		return(1);
 	}
 	
