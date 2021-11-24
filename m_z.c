@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h>
 
 char ch;
 double z = 0.0;
@@ -27,7 +28,7 @@ void handler(int sig){
 
 /* fd_from_comm / fd_to_mx helps in identifying an open file within a process while using input/output resources like network sockets or pipes */
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {	
 
 	/* declaration of needed variables */

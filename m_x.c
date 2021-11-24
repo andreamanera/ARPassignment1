@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h>
 
 char ch;
 double x = 0.0;
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
 
 	/* pipes opening for reading from command and writing to insp */
 	
-	fd_from_comm = open("fd_comm_to_m_x", O_RDONLY);
+	fd_from_comm = open(argv[1], O_RDONLY);
 	fd_to_insp = open("fd_to_insp_x", O_WRONLY);
 		
 			

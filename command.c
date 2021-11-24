@@ -8,11 +8,12 @@
 #include <signal.h>
 #include <string.h>
 #include <termios.h>
+#include <time.h>
 
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET "\033[0m"
 
-int main(void)
+int main(int argc, char *argv[])
 {
 
 	static struct termios oldt;
@@ -49,15 +50,17 @@ int main(void)
     
     char ch;
     
+    // opens pipe to write the commands 
+    
+    fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
+    fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
     /* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	
 	while (1){
 	
-        // opens pipe to write the commands 
         
-        fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
-        fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
+       
         
 		ch = getchar();
 		
