@@ -10,19 +10,19 @@
 #include <sys/wait.h>
 #include <time.h>
 
-char ch;
+int val;
 double z = 0.0;
 
 /* signals that we send from inspection needed to stop/reset motor x */
 
 void handler(int sig){
 	if(sig==SIGUSR1){
-		ch = 'x';
+		val = 6;
 	}
 	if(sig==SIGUSR2){
 		
 		z = 0.0;
-		ch = 'z';
+		val = 6;
 	}
 }
 
@@ -43,10 +43,9 @@ int main(int argc, char *argv[])
 
 	/* pipes opening for reading from command and writing to insp */
 	
-	fd_from_comm = open(argv[1], O_RDONLY);
-	fd_to_insp = open("fd_to_insp_z", O_WRONLY);
+	fd_from_comm = open("/tmp/z", O_RDONLY);
+	fd_to_insp = open("/tmp/inspz", O_WRONLY);
 		
-			
 	if(fd_from_comm == -1){
 		printf("Error opening FIFO from command to motor z\n");
 		return(1);
@@ -86,40 +85,41 @@ int main(int argc, char *argv[])
 		
 		else if (retval >= 0){
 			if(FD_ISSET(fd_from_comm, &rdset) != 0){
-				read(fd_from_comm, &ch, sizeof(ch));
+				read(fd_from_comm, &val, sizeof(val));
 			}   
 		}
 		
-		switch(ch){
+		switch(val){
 			                
-		    case 119: // case w
-		    if(z >= 5){
-		    }
-		    	else{
-		    	
-					z += step;
-					z += error;
-				    
+		    case 3: // case w
+		    
+				if(z >= 5){
 				}
-					
-					sleep(1);
+				
+				else{
+					z += step;
+					z = z + error;
+				}
+						
+				sleep(1);
 			break;					
 
-		    case 115: // case s
-		    if (z <= 0){
-		    }
-		    	else{
+		    case 4: // case s
 		    
+				if (z <= 0){
+				}
+				
+				else{
 					z -= step;
-					z += error;
-		    	}
-					
-					sleep(1);
+					z = z + error;
+				}
+						
+				sleep(1);
 			break;
-		
-			case 120: // case x
 			
-			sleep(1);
+			case 6: // case x
+			
+				sleep(1);
 			break;
 		}
 		

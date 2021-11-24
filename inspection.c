@@ -48,8 +48,8 @@ int main(int argc, char* argv[]){
 	
 	/* pipes opening */
 	
-	fd_from_mx = open("fd_to_insp_x", O_RDONLY);
-	fd_from_mz = open("fd_to_insp_z", O_RDONLY);
+	fd_from_mx = open("/tmp/inspx", O_RDONLY);
+	fd_from_mz = open("/tmp/inspz", O_RDONLY);
 			
 	if(fd_from_mx == -1){
 		printf("Error opening FIFO from motor x to inspection");
@@ -67,11 +67,13 @@ int main(int argc, char* argv[]){
 	pid_motor_z = atoi(argv[2]);
 
 	while(1){
+	
 		FD_ZERO(&rdset);
 		FD_SET(fd_from_mx, &rdset);
 		FD_SET(fd_from_mz, &rdset);
+		FD_SET(0,&rdset);
 		
-		/* we want to read instantly the datas from command */
+		/* we want to read instantly the datas from motors */
 	
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
@@ -89,19 +91,21 @@ int main(int argc, char* argv[]){
 				read(fd_from_mz, &z, sizeof(z));
 		}
 		
-		ch = getchar();
-		
-		if (ch == 'r'){
-			kill(pid_motor_x, SIGUSR2);
-			kill(pid_motor_z, SIGUSR2);
+		if (FD_ISSET(0,&rdset)>0){
+			read(0, &ch, sizeof(char));
+				
+				if(ch == 's'){
+					kill(pid_motor_x, SIGUSR1);
+					kill(pid_motor_z, SIGUSR1);
+				}
+				
+				if(ch == 'r'){
+					kill(pid_motor_x,SIGUSR2);
+					kill(pid_motor_z,SIGUSR2);
+				}
 		}
 		
-		if (ch == 'q'){
-			kill(pid_motor_x, SIGUSR1);
-			kill(pid_motor_z, SIGUSR1);
-		}
-		
-		printf("X position : %f meter, Y position: %f meter", x, z);
+		printf("\r X position: %f meter, Y position: %f meter", x, z);
 		fflush(stdout);
 	}
 	

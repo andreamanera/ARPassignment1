@@ -48,59 +48,63 @@ int main(int argc, char *argv[])
    	int fd_to_mx;
     int fd_to_mz;
     
+    int d = 1;
+    int a = 2;
+    int w = 3;
+    int s = 4;
+    int x = 5;
+    int z = 6;
+    
     char ch;
     
     // opens pipe to write the commands 
     
-    fd_to_mx = open("fd_comm_to_m_x", O_WRONLY);
-    fd_to_mz = open("fd_comm_to_m_z", O_WRONLY);
-    /* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
+    fd_to_mx = open("/tmp/x", O_WRONLY);
+    fd_to_mz = open("/tmp/z", O_WRONLY);
+    
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	
 	while (1){
 	
-        
-       
-        
 		ch = getchar();
 		
 		switch(ch){
 
 			case 119: // case w
-		    printf("Z increase\n");
-		    fflush(stdout);
-		    write(fd_to_mz, &ch, sizeof(ch));
-		    	break;
+				printf("Z increase\n");
+				fflush(stdout);
+				write(fd_to_mz, &w, sizeof(ch));
+		   	break;
 
 			case 115: // case s
-		    printf("Z decrease\n");
-		    fflush(stdout);
-		    write(fd_to_mz, &ch, sizeof(ch));
-		    	break;
+				printf("Z decrease\n");
+				fflush(stdout);
+				write(fd_to_mz, &s, sizeof(ch));
+		    break;
 
 		    case 122 :// case z
-		    printf("Z stop\n");
-		    fflush(stdout);
-		    write(fd_to_mz, &ch, sizeof(ch));
-		    	break;
+				printf("Z stop\n");
+				fflush(stdout);
+				write(fd_to_mz, &z, sizeof(ch));
+		    break;
 		                
 		    case 100: // case d
-		    printf("X increase\n");
-		    fflush(stdout);
-		    write(fd_to_mx, &ch, sizeof(ch));
-		    	break;
+				printf("X increase\n");
+				fflush(stdout);
+				write(fd_to_mx, &d, sizeof(ch));
+		    break;
 
 		    case 97: // case a
-		    printf("X decrease\n");
-		    fflush(stdout);
-		    write(fd_to_mx, &ch, sizeof(ch));
-		    	break;
+				printf("X decrease\n");
+				fflush(stdout);
+				write(fd_to_mx, &a, sizeof(ch));
+		    break;
 
 		    case 120: // case x
-		    printf("X stop\n");
-		    fflush(stdout);
-		    write(fd_to_mx, &ch, sizeof(ch));
-		    	break;
+				printf("X stop\n");
+				fflush(stdout);
+				write(fd_to_mx, &x, sizeof(ch));
+		    break;
 		}
 				 
 		close(fd_to_mx);

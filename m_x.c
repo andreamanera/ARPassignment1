@@ -10,19 +10,19 @@
 #include <sys/wait.h>
 #include <time.h>
 
-char ch;
+int val;
 double x = 0.0;
 
 /* signals that we send from inspection needed to stop/reset motor x */
 
 void handler(int sig){
 	if(sig == SIGUSR1){
-		ch = 'x';
+		val = 5;
 	}
 	if(sig == SIGUSR2){
 		
 		x = 0.0;
-		ch = 'z';
+		val = 5;
 	}
 }
 
@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
 
 	/* pipes opening for reading from command and writing to insp */
 	
-	fd_from_comm = open(argv[1], O_RDONLY);
-	fd_to_insp = open("fd_to_insp_x", O_WRONLY);
+	fd_from_comm = open("/tmp/x", O_RDONLY);
+	fd_to_insp = open("/tmp/inspx", O_WRONLY);
 		
 			
 	if(fd_from_comm == -1){
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		sigaction(SIGUSR1, &sa, NULL);
 		sigaction(SIGUSR2,&sa,NULL);
 
-		/* we want to read instantly the datas from command */
+		/* we want to read instantly the datas from command, not waiting */
 	
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
@@ -88,40 +88,41 @@ int main(int argc, char* argv[])
 		
 		else if (retval >= 0){
 			if(FD_ISSET(fd_from_comm, &rdset) != 0){
-				read(fd_from_comm, &ch, sizeof(ch));
+				read(fd_from_comm, &val, sizeof(val));
 			}   
 		}
 		
-		switch(ch){
+		switch(val){
 			                
-		    case 100: // case d
-		    if(x >= 5){
-		    }
-		    	else{
-		    	
-					x += step;
-					x += error;
-				    
+		    case 1: // case d
+		    
+				if(x >= 5){
 				}
-					
-					sleep(1);
+				
+				else{
+					x += step;
+					x = x + error;
+				}
+						
+				sleep(1);
 			break;					
 
-		    case 97: // case a
-		    if (x <= 0){
-		    }
-		    	else{
+		    case 2: // case a
 		    
+				if (x <= 0){
+				}
+				
+				else{
 					x -= step;
-					x += error;
-		    	}
-					
-					sleep(1);
+					x = x + error;
+				}
+						
+				sleep(1);
 			break;
 			
-			case 120: // case x
+			case 5: // case x
 			
-			sleep(1);
+				sleep(1);
 			break;
 		}
 		

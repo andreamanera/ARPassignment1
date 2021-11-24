@@ -38,6 +38,11 @@ int main(){
 	
 	/* pipe's declaration */
 	
+	char *fd_comm_to_m_x = "/tmp/x";
+	char *fd_comm_to_m_z = "/tmp/z";
+	char *fd_to_insp_x = "/tmp/inspx";
+	char *fd_to_insp_z = "/tmp/inspz";
+	
 	mkfifo("/tmp/x", 0666);
 	mkfifo("/tmp/z", 0666);
 	mkfifo("/tmp/inspx", 0666);
@@ -65,11 +70,7 @@ int main(){
 	/*char * arg_list_watchdog[] = {"./watchdog", NULL, NULL };
 	pid_watchdog = spawn("./watchdog", arg_list_watchdog); */
 	
-	
-
 	wait(NULL);
-
-	fflush(stdout);
 	
 	unlink("/tmp/x");
 	unlink("/tmp/z");
