@@ -8,65 +8,134 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <time.h>
+
+char ch;
+
+/* signals that we send from inspection needed to stop/reset motor x */
+
+void handler(int sig){
+	if(sig==SIGUSR1){
+		ch = 'x';
+	}
+	if(sig==SIGUSR2){
+		
+		x = 0.0;
+		ch = 'z';
+	}
+}
 
 /* fd_from_comm / fd_to_mx helps in identifying an open file within a process while using input/output resources like network sockets or pipes */
 
-int main(void)
-{
-	
-	char ch;
+int main(int argc, char* argv[])
+{	
+
+	/* declaration of needed variables */
+	 
 	int fd_from_comm;
 	int fd_to_insp;
-	
-	/* FIFO that reads from command console */
-	
-	char * myfifo = "/tmp/myfifo"; 
-	mkfifo(myfifo, 0666); 
+	int retval;
+	double step = 0.1;
+	double x = 0.0;
+	struct timeval tv;
+	struct sigaction sa; 
+	fd_set rdset;
 
-	/* FIFO that writes to inspection console */
+	/* pipes opening for reading from command and writing to insp */
 	
-	char * myfifo3 = "/tmp/myfifo3"; 
-	mkfifo(myfifo3, 0666); 
+	fd_from_comm = open(argv[1], O_RDONLY);
+	fd_to_insp = open("fd_to_insp_z", O_WRONLY);
+		
+			
+	if(fd_from_comm == -1){
+		printf("Error opening FIFO from command to motor z");
+		return(1);
+	}
 	
-	double z = 0.0;
-	double z_end = 10.0;
-	double error;
-	
-	/* rimango nel while e ogni volta eseguo solo un if e poi il ciclo si ripete */
+	if(fd_mx_to_ins == -1){
+		printf("Error opening FIFO from motor z to inspection");
+		return(1);
+	}
 	
 	while(1){
+		
+		double error = (double) rand() /(double) (RAND_MAX/0.001);
+		
+		memset(&sa, 0, sizeof(sa));
+		sa.sa_handler=&handler;
+		sa.sa_flags=SA_RESTART;
+		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGUSR2,&sa,NULL);
 	
-		fd_from_comm = open(myfifo, O_RDONLY);
-		fd_to_insp = open(myfifo3, O_WRONLY);
+		/* we want to read instantly the datas from command */
+	
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
 		
-		read(fd_from_comm, &ch, sizeof(ch));
+		/* file descriptor of datas that will be ready to be READ */
 		
-		error = (double) rand() /(double) (RAND_MAX/0.025);
+		FD_ZERO(&rdset);
+		FD_SET(fd_from_comm, &rdset);
+		retval = select(FD_SETSIZE, &rdset, NULL, NULL, &tv);
 		
-		if (ch == 's' && z > 0.25){
-			z -= 0.25;
-			z = z + error;  
-			printf("%f\n", z);
-			fflush(stdout);	
-			write(fd_to_insp, &z, sizeof(z)); 
+		if (retval == -1){
+			perror("select()");
 		}
 		
-		if (ch == 'w' && z < 9.75){
-			z += 0.25;
-			z = z + error; 
-			printf("%f\n", z);	
-			fflush(stdout);	
-			write(fd_to_insp, &z, sizeof(z));
+		/* controll that fd_from_comm is put inside rdset */
+		
+		else if (retval >= 0){
+			if(FD_ISSET(fd_from_comm, &rdset) != 0){
+				read(fd_from_comm, &ch, sizeof(ch));
+			}   
 		}
 		
-		if (ch != 'w' && ch != 's'){
-			write(fd_to_insp, &z, sizeof(z));
+		switch(ch){
+			                
+		    case 119: // case w
+		    if(z >= 5){
+		    }
+		    	else{
+		    	
+					z += step;
+					z += error;
+				    
+				}
+					
+					sleep(1);
+			break;					
+
+		    case 115: // case s
+		    if (z <= 0){
+		    }
+		    	else{
+		    
+					z -= step;
+					z += error;
+		    	}
+					
+					sleep(1);
+			break;
 		}
 		
-		close(fd_from_comm);
-		close(fd_to_insp);
+			case 120: // case x
+			
+			sleep(1);
+			break;
+		}
+		
+		if (z > 5.0) 
+			z = 5.0;
+		
+		if (z < 0.0) 
+			z = 0.0;
+		
+		write(fd_mx_to_ins, &z, sizeof(x));;
 	}
+	
+	close(fd_from_comm);
+	close(fd_to_insp)
 	
 	return 0;
 }
+
+	

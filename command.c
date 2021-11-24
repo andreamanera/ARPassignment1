@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <termios.h>
 
 #define YELLOW  "\033[33m"      /* Yellow */
@@ -48,13 +47,6 @@ int main(void)
    	int fd_to_mx;
     int fd_to_mz;
     
-    int d = 1;
-    int a = 2;
-    int w = 4;
-    int s = 5;
-    int z = 6;
-    int x = 3;
-    
     char ch;
     
     /* Se schiaccio una freccetta, Wrong command! esce fuori 3 volte!! */
@@ -69,8 +61,8 @@ int main(void)
         
 		ch = getchar();
 		
-		switch(ch)
-		{
+		switch(ch){
+
 			case 119: // case w
 		    printf("Z increase\n");
 		    fflush(stdout);

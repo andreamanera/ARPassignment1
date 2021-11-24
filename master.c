@@ -72,6 +72,7 @@ int main(){
 	wait(NULL);
 
 	fflush(stdout);
+	
 	unlink("fd_comm_to_m_x");
 	unlink("fd_comm_to_m_z");
 	unlink("fd_to_insp_x");
