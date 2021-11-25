@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     
     disable_waiting_for_enter();
     
-   	int fd_to_mx;
+    int fd_to_mx;
     int fd_to_mz;
     
     int d = 1;
@@ -106,10 +106,10 @@ int main(int argc, char *argv[])
 				write(fd_to_mx, &x, sizeof(ch));
 		    break;
 		}
-				 
-		close(fd_to_mx);
-		close(fd_to_mz);
+			 
+		
 	}
-
+	close(fd_to_mx);
+	close(fd_to_mz);
 	return 0;
 }

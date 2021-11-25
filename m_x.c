@@ -103,7 +103,8 @@ int main(int argc, char* argv[])
 					x += step;
 					x = x + error;
 				}
-						
+				printf("%d", val);
+				fflush(stdout);		
 				sleep(1);
 			break;					
 
@@ -116,13 +117,16 @@ int main(int argc, char* argv[])
 					x -= step;
 					x = x + error;
 				}
-						
+				printf("%d", val);
+				fflush(stdout);		
 				sleep(1);
 			break;
 			
-			case 5: // case x
+		    case 5: // case x
 			
-				sleep(1);
+			sleep(1);
+			printf("%d", val);
+			fflush(stdout);
 			break;
 		}
 		

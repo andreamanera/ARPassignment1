@@ -38,11 +38,6 @@ int main(){
 	
 	/* pipe's declaration */
 	
-	char *fd_comm_to_m_x = "/tmp/x";
-	char *fd_comm_to_m_z = "/tmp/z";
-	char *fd_to_insp_x = "/tmp/inspx";
-	char *fd_to_insp_z = "/tmp/inspz";
-	
 	mkfifo("/tmp/x", 0666);
 	mkfifo("/tmp/z", 0666);
 	mkfifo("/tmp/inspx", 0666);

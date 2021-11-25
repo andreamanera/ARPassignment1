@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
 		if (FD_ISSET(0,&rdset)>0){
 			read(0, &ch, sizeof(char));
 				
-				if(ch == 's'){
+				if(ch == 'q'){
 					kill(pid_motor_x, SIGUSR1);
 					kill(pid_motor_z, SIGUSR1);
 				}
