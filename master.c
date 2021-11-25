@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <sys/wait.h>
 
 /* We create each child process that will execute the processes instead of the father process. */
 
@@ -35,7 +36,6 @@ int main(){
 	
 	char pid_motor_x[20];
 	char pid_motor_z[20];
-	char pid_command[20];
 	char pid_watchdog[20];
 	
 	/* pipe's declaration */
@@ -50,7 +50,7 @@ int main(){
 	
 	char *arg_list_m_x[] = { "./m_x", "/tmp/x", NULL };
 	char *arg_list_m_z[] = { "./m_z", "/tmp/z" , NULL };
-	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", pid_watchdog, (char*)NULL };
+	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", pid_watchdog, "/tmp/cwd", (char*)NULL };
 	
 	/* fork to create various child processes */
 	
@@ -62,14 +62,15 @@ int main(){
 	
 	sprintf(pid_motor_x, "%d", pid_m_x);
 	sprintf(pid_motor_z, "%d", pid_m_z);
-	sprintf(pid_command, "%d", pid_comm);
-
-	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
-	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
-	char *arg_list_watchdog[] = {"./watchdog", pid_motor_x, pid_motor_z, pid_command, NULL };
+	
+	char *arg_list_watchdog[] = {"./watchdog", pid_motor_x, pid_motor_z, "/tmp/cwd", (char*)NULL };
 	pid_wd = spawn("./watchdog", arg_list_watchdog);
 	
 	sprintf(pid_watchdog, "%d", pid_wd);
+
+	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
+	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
+	
 	
 	wait(NULL);
 	

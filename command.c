@@ -9,17 +9,16 @@
 #include <string.h>
 #include <termios.h>
 #include <time.h>
+#include <sys/wait.h>
 
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET "\033[0m"
 
-char ch;
+int l;
 
 void handler(int sig){
-	if(sig==SIGUSR1){
-	}
 	if(sig==SIGUSR2){
-		ch = 'o';
+		l = 1;
 		}
 }
 
@@ -57,8 +56,14 @@ int main(int argc, char *argv[])
     
     int fd_to_mx;
     int fd_to_mz;
+    int fd_to_wd;
     
     int pid_wd;
+    int pid_command;
+    
+    fd_to_wd=open(argv[2], O_WRONLY);
+    pid_command=getpid();
+    write(fd_to_wd, &pid_command, sizeof(pid_command));
     
     int d = 1;
     int a = 2;
@@ -67,12 +72,13 @@ int main(int argc, char *argv[])
     int x = 5;
     int z = 6;
     
+    char ch;
+    
     struct sigaction sa; 
     
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler=&handler;
     sa.sa_flags=SA_RESTART;
-    sigaction(SIGUSR1, &sa, NULL);
     sigaction(SIGUSR2,&sa,NULL);
     
     pid_wd=atoi(argv[1]);
@@ -131,12 +137,18 @@ int main(int argc, char *argv[])
 				kill(pid_wd, SIGUSR1);
 		    break;
 		    
-		    case 111:
-		               printf("Command console disabled");
-		    break;
+		    switch(l){
+		
+		  	 case 1:
+		   	    printf("command console disabled\n");
+		   	    fflush(stdout);
+		   	 break;
+		   }
 		    
 		}
-			 
+		
+		 
+		   
 		
 	}
 	close(fd_to_mx);

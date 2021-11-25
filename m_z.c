@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <sys/wait.h>
 
 int val;
 double z = 0.0;

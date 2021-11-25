@@ -9,6 +9,7 @@
 #include <string.h>
 #include <termios.h>
 #include <time.h>
+#include <sys/wait.h>
 
 int main(int argc, char* argv[]){
 
@@ -97,15 +98,16 @@ int main(int argc, char* argv[]){
 			read(0, &ch, sizeof(char));
 				
 				if(ch == 'q'){
+					kill(pid_wd, SIGUSR1);
 					kill(pid_motor_x, SIGUSR1);
 					kill(pid_motor_z, SIGUSR1);
-					//kill(pid_wd, SIGUSR1);
+					
 				}
 				
 				if(ch == 'r'){
+					kill(pid_wd, SIGUSR1);
 					kill(pid_motor_x,SIGUSR2);
 					kill(pid_motor_z,SIGUSR2);
-					//kill(pid_wd, SIGUSR1);
 				}
 		}
 		
