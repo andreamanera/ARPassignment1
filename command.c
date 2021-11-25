@@ -14,7 +14,7 @@
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET "\033[0m"
 
-int l;
+int l = 0;
 
 void handler(int sig){
 	if(sig==SIGUSR2){
@@ -58,12 +58,9 @@ int main(int argc, char *argv[])
     int fd_to_mz;
     int fd_to_wd;
     
-    int pid_wd;
-    int pid_command;
-    
-    fd_to_wd=open(argv[2], O_WRONLY);
-    pid_command=getpid();
-    write(fd_to_wd, &pid_command, sizeof(pid_command));
+    pid_t pid_wd;
+    pid_t pid_command;
+
     
     int d = 1;
     int a = 2;
@@ -79,13 +76,19 @@ int main(int argc, char *argv[])
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler=&handler;
     sa.sa_flags=SA_RESTART;
-    sigaction(SIGUSR2,&sa,NULL);
+    sigaction(SIGUSR2, &sa, NULL);
     
     pid_wd=atoi(argv[1]);
+    pid_command=getpid();
+    
+    
     // opens pipe to write the commands 
     
     fd_to_mx = open("/tmp/x", O_WRONLY);
     fd_to_mz = open("/tmp/z", O_WRONLY);
+    fd_to_wd = open("tmp/cwd", O_WRONLY);
+    
+    write(fd_to_wd, &pid_command, sizeof(pid_command));
     
     /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
 	
@@ -143,6 +146,8 @@ int main(int argc, char *argv[])
 		   	    printf("command console disabled\n");
 		   	    fflush(stdout);
 		   	 break;
+		   	 
+		   	 
 		   }
 		    
 		}
@@ -153,5 +158,6 @@ int main(int argc, char *argv[])
 	}
 	close(fd_to_mx);
 	close(fd_to_mz);
+	close(fd_to_wd);
 	return 0;
 }

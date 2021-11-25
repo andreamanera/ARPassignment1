@@ -11,10 +11,10 @@
 #include <time.h>
 #include <sys/wait.h>
 
-int pid_m_x;
-int pid_m_z;
-int pid_command;
-int fd_c_to_wd;
+pid_t pid_m_x;
+pid_t pid_m_z;
+pid_t pid_command;
+pid_t fd_c_to_wd;
 
 void handler(int sig){
 	if(sig==SIGUSR1){
@@ -29,24 +29,27 @@ void handler(int sig){
 
 int main(int argc, char * argv[]){
 
-	pid_m_x=atoi(argv[1]);
-	pid_m_z=atoi(argv[2]);
-	
-	fd_c_to_wd=open(argv[3], O_RDONLY);
+	fd_c_to_wd=open(argv[1], O_RDONLY);
+	pid_m_x=atoi(argv[2]);
+	pid_m_z=atoi(argv[3]);
 	
 	struct sigaction sa;
 	memset(&sa, 0, sizeof(sa));
 	sa.sa_handler=&handler;
 	sa.sa_flags=SA_RESTART;
 	
+	
 	alarm(10);
+	
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGALRM,&sa,NULL);
+	
 	
 	read(fd_c_to_wd, &pid_command, sizeof(pid_command));
 	
 	while(1){
 		sleep(1);
 		}
+	close(fd_c_to_wd);
 	return 0;
 	}

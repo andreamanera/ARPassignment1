@@ -37,9 +37,9 @@ int main(int argc, char* argv[]){
 	disable_waiting_for_enter();
 	
 	char ch;
-	int pid_motor_x;
-	int pid_motor_z;
-	int pid_wd;
+	pid_t pid_motor_x;
+	pid_t pid_motor_z;
+	pid_t pid_wd;
 	double x;
 	double z;
 	int fd_from_mx;
