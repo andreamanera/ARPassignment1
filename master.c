@@ -35,6 +35,8 @@ int main(){
 	
 	char pid_motor_x[20];
 	char pid_motor_z[20];
+	char pid_command[20];
+	char pid_watchdog[20];
 	
 	/* pipe's declaration */
 	
@@ -42,12 +44,13 @@ int main(){
 	mkfifo("/tmp/z", 0666);
 	mkfifo("/tmp/inspx", 0666);
 	mkfifo("/tmp/inspz", 0666);
+	mkfifo("/tmp/cwd", 0666);
 	
 	/* arguments that i have to pass to the process that i want to execute through master's child */
 	
 	char *arg_list_m_x[] = { "./m_x", "/tmp/x", NULL };
 	char *arg_list_m_z[] = { "./m_z", "/tmp/z" , NULL };
-	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", (char*)NULL };
+	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", pid_watchdog, (char*)NULL };
 	
 	/* fork to create various child processes */
 	
@@ -59,11 +62,14 @@ int main(){
 	
 	sprintf(pid_motor_x, "%d", pid_m_x);
 	sprintf(pid_motor_z, "%d", pid_m_z);
+	sprintf(pid_command, "%d", pid_comm);
 
-	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", pid_motor_x, pid_motor_z, (char*)NULL };
+	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
 	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
-	/*char * arg_list_watchdog[] = {"./watchdog", NULL, NULL };
-	pid_watchdog = spawn("./watchdog", arg_list_watchdog); */
+	char *arg_list_watchdog[] = {"./watchdog", pid_motor_x, pid_motor_z, pid_command, NULL };
+	pid_wd = spawn("./watchdog", arg_list_watchdog);
+	
+	sprintf(pid_watchdog, "%d", pid_wd);
 	
 	wait(NULL);
 	
@@ -71,6 +77,7 @@ int main(){
 	unlink("/tmp/z");
 	unlink("/tmp/inspx");
 	unlink("/tmp/inspz");
+	unlink("/tmp/cwd");
 	
 	return 0;
 

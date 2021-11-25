@@ -13,9 +13,19 @@
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET "\033[0m"
 
+char ch;
+
+void handler(int sig){
+	if(sig==SIGUSR1){
+	}
+	if(sig==SIGUSR2){
+		ch = 'o';
+		}
+}
+
+
 int main(int argc, char *argv[])
 {
-
 	static struct termios oldt;
 
 	void restore_terminal_settings(void)
@@ -48,6 +58,8 @@ int main(int argc, char *argv[])
     int fd_to_mx;
     int fd_to_mz;
     
+    int pid_wd;
+    
     int d = 1;
     int a = 2;
     int w = 3;
@@ -55,8 +67,15 @@ int main(int argc, char *argv[])
     int x = 5;
     int z = 6;
     
-    char ch;
+    struct sigaction sa; 
     
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler=&handler;
+    sa.sa_flags=SA_RESTART;
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2,&sa,NULL);
+    
+    pid_wd=atoi(argv[1]);
     // opens pipe to write the commands 
     
     fd_to_mx = open("/tmp/x", O_WRONLY);
@@ -70,41 +89,52 @@ int main(int argc, char *argv[])
 		
 		switch(ch){
 
-			case 119: // case w
+		    case 119: // case w
 				printf("Z increase\n");
 				fflush(stdout);
 				write(fd_to_mz, &w, sizeof(ch));
-		   	break;
+				kill(pid_wd, SIGUSR1);
+		    break;
 
-			case 115: // case s
+		    case 115: // case s
 				printf("Z decrease\n");
 				fflush(stdout);
 				write(fd_to_mz, &s, sizeof(ch));
+				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 122 :// case z
 				printf("Z stop\n");
 				fflush(stdout);
 				write(fd_to_mz, &z, sizeof(ch));
+				kill(pid_wd, SIGUSR1);
 		    break;
 		                
 		    case 100: // case d
 				printf("X increase\n");
 				fflush(stdout);
 				write(fd_to_mx, &d, sizeof(ch));
+				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 97: // case a
 				printf("X decrease\n");
 				fflush(stdout);
 				write(fd_to_mx, &a, sizeof(ch));
+				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 120: // case x
 				printf("X stop\n");
 				fflush(stdout);
 				write(fd_to_mx, &x, sizeof(ch));
+				kill(pid_wd, SIGUSR1);
 		    break;
+		    
+		    case 111:
+		               printf("Command console disabled");
+		    break;
+		    
 		}
 			 
 		

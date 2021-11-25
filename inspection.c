@@ -38,6 +38,7 @@ int main(int argc, char* argv[]){
 	char ch;
 	int pid_motor_x;
 	int pid_motor_z;
+	int pid_wd;
 	double x;
 	double z;
 	int fd_from_mx;
@@ -65,6 +66,7 @@ int main(int argc, char* argv[]){
 	
 	pid_motor_x = atoi(argv[1]);
 	pid_motor_z = atoi(argv[2]);
+	pid_wd=atoi(argv[3]);
 
 	while(1){
 	
@@ -97,11 +99,13 @@ int main(int argc, char* argv[]){
 				if(ch == 'q'){
 					kill(pid_motor_x, SIGUSR1);
 					kill(pid_motor_z, SIGUSR1);
+					//kill(pid_wd, SIGUSR1);
 				}
 				
 				if(ch == 'r'){
 					kill(pid_motor_x,SIGUSR2);
 					kill(pid_motor_z,SIGUSR2);
+					//kill(pid_wd, SIGUSR1);
 				}
 		}
 		
