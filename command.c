@@ -11,63 +11,76 @@
 #include <time.h>
 #include <sys/wait.h>
 
-#define YELLOW  "\033[33m"      /* Yellow */
-#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW  "\033[33m"  
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"       
+#define CYAN "\033[36m"   
+#define WHITE "\033[37m"       
 
-int l = 0;
+int l;
 
 void handler(int sig){
-	if(sig==SIGUSR2){
+
+	if(sig == SIGUSR2){
+
 		l = 1;
-		}
+	}
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
+	
 	static struct termios oldt;
 
-	void restore_terminal_settings(void)
-	{
-		tcsetattr(0, TCSANOW, &oldt);  /* Apply saved settings */
+	void restore_terminal_settings(void){
+
+		tcsetattr(0, TCSANOW, &oldt);  // Apply saved settings 
 	}
 
-	void disable_waiting_for_enter(void)
-	{
+	void disable_waiting_for_enter(void){
+
 		struct termios newt;
 
-		/* Make terminal read 1 char at a time */
-		tcgetattr(0, &oldt);  /* Save terminal settings */
-		newt = oldt;  /* Init new settings */
-		newt.c_lflag &= ~(ICANON | ECHO);  /* Change settings */
-		tcsetattr(0, TCSANOW, &newt);  /* Apply settings */
-		atexit(restore_terminal_settings); /* Make sure settings will be restored when program ends  */
+		// Make terminal read 1 char at a time 
+
+		tcgetattr(0, &oldt);  
+		newt = oldt;  
+		newt.c_lflag &= ~(ICANON | ECHO); 
+		tcsetattr(0, TCSANOW, &newt);  
+		atexit(restore_terminal_settings);  
 	}
-    
-    printf("This is a robot simulator which simulates a joist. If you want to move it, press the following buttons on the keyboard.\n");
-    printf(YELLOW "To move UP, press W" RESET "\n");
-    printf(YELLOW "To move DOWN, press S" RESET "\n");
-    printf(YELLOW "To move RIGHT, press D" RESET "\n");
-    printf(YELLOW "To move LEFT, press A" RESET "\n");
-    printf(YELLOW "To STOP z axis, press Z" RESET "\n");
-    printf(YELLOW "To STOP x axis, press X" RESET "\n");
-    
+     
+	printf(BLUE "CCCC  OOOO  M     M  M     M     A     N    N  DD   \n");           
+	printf(BLUE "C     O  O  M M M M  M M M M    A A    N N  N  D D  \n");
+    printf(BLUE "C     O  O  M  M  M  M  M  M   AAAAA   N  N N  D  D \n");
+    printf(BLUE "CCCC  OOOO  M     M  M     M  A     A  N    N  DDDD \n");
+	printf("\n");
+	printf("\n");
+    printf(GREEN "This is a robot simulator which simulates the movements of a joist. If you want to move it, press the following buttons on the keyboard.\n");
+	printf("\n");
+    printf(YELLOW "To move UP, press W\n");
+    printf(YELLOW "To move DOWN, press S\n");
+    printf(YELLOW "To move RIGHT, press D\n");
+    printf(YELLOW "To move LEFT, press A\n");
+    printf(YELLOW "To STOP z axis, press Z\n");
+    printf(YELLOW "To STOP x axis, press X\n");
+    printf("\n");
     disable_waiting_for_enter();
     
     int fd_to_mx;
     int fd_to_mz;
     int fd_to_wd;
-    
-    pid_t pid_wd;
-    pid_t pid_command;
 
-    
-    int d = 1;
+	int d = 1;
     int a = 2;
     int w = 3;
     int s = 4;
     int x = 5;
     int z = 6;
+    
+    pid_t pid_wd;
+    pid_t pid_command;
     
     char ch;
     
@@ -78,11 +91,10 @@ int main(int argc, char *argv[])
     sa.sa_flags=SA_RESTART;
     sigaction(SIGUSR2, &sa, NULL);
     
-    pid_wd=atoi(argv[1]);
-    pid_command=getpid();
+    pid_wd = atoi(argv[1]);
+    pid_command = getpid();
     
-    
-    // opens pipe to write the commands 
+    // opens pipes to write the commands 
     
     fd_to_mx = open("/tmp/x", O_WRONLY);
     fd_to_mz = open("/tmp/z", O_WRONLY);
@@ -90,7 +102,7 @@ int main(int argc, char *argv[])
     
     write(fd_to_wd, &pid_command, sizeof(pid_command));
     
-    /* Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) */
+    // Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) 
 	
 	while (1){
 	
@@ -99,65 +111,60 @@ int main(int argc, char *argv[])
 		switch(ch){
 
 		    case 119: // case w
-				printf("Z increase\n");
+				printf(GREEN "Z INCREASE\n");
 				fflush(stdout);
 				write(fd_to_mz, &w, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 115: // case s
-				printf("Z decrease\n");
+				printf(RED "Z DECREASE\n");
 				fflush(stdout);
 				write(fd_to_mz, &s, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 122 :// case z
-				printf("Z stop\n");
+				printf(CYAN "Z STOP\n");
 				fflush(stdout);
 				write(fd_to_mz, &z, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 		                
 		    case 100: // case d
-				printf("X increase\n");
+				printf(WHITE "X INCREASE\n");
 				fflush(stdout);
 				write(fd_to_mx, &d, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 97: // case a
-				printf("X decrease\n");
+				printf(MAGENTA "X DECREASE\n");
 				fflush(stdout);
 				write(fd_to_mx, &a, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 
 		    case 120: // case x
-				printf("X stop\n");
+				printf(BLUE "X STOP\n");
 				fflush(stdout);
 				write(fd_to_mx, &x, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
 		    
 		    switch(l){
-		
-		  	 case 1:
-		   	    printf("command console disabled\n");
-		   	    fflush(stdout);
-		   	 break;
-		   	 
-		   	 
-		   }
-		    
+
+				case 1:
+					printf(RED "COMMAND CONSOLE DISABLED!!\n");
+					fflush(stdout);
+		   	 	break;
+			}
 		}
-		
-		 
-		   
-		
 	}
+
 	close(fd_to_mx);
 	close(fd_to_mz);
 	close(fd_to_wd);
+
 	return 0;
 }
