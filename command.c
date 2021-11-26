@@ -19,7 +19,7 @@
 #define CYAN "\033[36m"   
 #define WHITE "\033[37m"       
 
-int l;
+int l = 0;
 
 void handler(int sig){
 
@@ -108,6 +108,16 @@ int main(int argc, char *argv[]){
 	
 		ch = getchar();
 		
+		switch(l){
+
+		case 1:
+			printf(RED "COMMAND CONSOLE DISABLED!!\n");
+			fflush(stdout);
+	        break;
+	        
+	        case 0:
+	        
+	        
 		switch(ch){
 
 		    case 119: // case w
@@ -152,12 +162,7 @@ int main(int argc, char *argv[]){
 				kill(pid_wd, SIGUSR1);
 		    break;
 		    
-		    switch(l){
-
-				case 1:
-					printf(RED "COMMAND CONSOLE DISABLED!!\n");
-					fflush(stdout);
-		   	 	break;
+		    
 			}
 		}
 	}
