@@ -88,44 +88,48 @@ int main(int argc, char *argv[])
 				read(fd_from_comm, &val, sizeof(val));
 			}   
 		}
-		
+					
 		switch(val){
-			                
-		    case 3: // case w
-		    
+							
+			case 3: // case w
+				    
 				if(z >= 5){
-				}
-				
+					}
+						
 				else{
 					z += step;
 					z = z + error;
-				}
-						
+					}
+								
 				sleep(1);
 			break;					
 
-		    case 4: // case s
-		    
+			case 4: // case s
+				    
 				if (z <= 0){
-				}
-				
+					}
+						
 				else{
 					z -= step;
 					z = z + error;
-				}
-						
+					}
+								
 				sleep(1);
 			break;
+					
+			case  6:
+			  	sleep(1);
+		        break;
+			}
+			
+			if (z > 5.0) 
+				z = 5.0;
+				
+			if (z < 0.0) 
+				z = 0.0;
+				
+			write(fd_to_insp, &z, sizeof(z));		
 		}
-	
-		if (z > 5.0) 
-			z = 5.0;
-		
-		if (z < 0.0) 
-			z = 0.0;
-		
-		write(fd_to_insp, &z, sizeof(z));
-	}
 	
 	close(fd_from_comm);
 	close(fd_to_insp);

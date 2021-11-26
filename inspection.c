@@ -41,13 +41,11 @@ int main(int argc, char* argv[]){
 	pid_t pid_motor_x;
 	pid_t pid_motor_z;
 	pid_t pid_wd;
-	pid_t pid_command;
 
 	double x;
 	double z;
 	int fd_from_mx;
 	int fd_from_mz;
-	int fd_from_comm;
 	int retval;
 
 	struct timeval tv; 
@@ -58,7 +56,6 @@ int main(int argc, char* argv[]){
 	
 	fd_from_mx = open("/tmp/inspx", O_RDONLY);
 	fd_from_mz = open("/tmp/inspz", O_RDONLY);
-	fd_from_comm = open("/tmp/cti", O_RDONLY);
 			
 	if(fd_from_mx == -1){
 		printf("Error opening FIFO from motor x to inspection");
@@ -69,11 +66,6 @@ int main(int argc, char* argv[]){
 		printf("Error opening FIFO from motor z to inspection");
 		return(1);
 	}
-
-	if(fd_from_comm == -1){
-		printf("Error opening FIFO from command to inspection");
-		return(1);
-	}
 	
 	/* convert the pid from string to int */
 	
@@ -81,7 +73,6 @@ int main(int argc, char* argv[]){
 	pid_motor_z = atoi(argv[2]);
 	pid_wd=atoi(argv[3]);
 
-	read(fd_from_comm, &pid_command, sizeof(pid_command));
 
 	while(1){
 	
@@ -122,7 +113,7 @@ int main(int argc, char* argv[]){
 					kill(pid_wd, SIGUSR1);
 					kill(pid_motor_x,SIGUSR2);
 					kill(pid_motor_z,SIGUSR2);
-					kill(pid_command,SIGUSR2);
+					//kill(pid_command,SIGUSR2);
 				}
 		}
 		
@@ -132,7 +123,6 @@ int main(int argc, char* argv[]){
 	
 	close(fd_from_mx);
 	close(fd_from_mz);
-	close(fd_from_comm);
 	
 	return 0;
 }

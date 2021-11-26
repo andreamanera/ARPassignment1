@@ -13,6 +13,7 @@
 
 int val;
 double x = 0.0;
+int l = 0;
 
 /* signals that we send from inspection needed to stop/reset motor x */
 
@@ -21,7 +22,6 @@ void handler(int sig){
 		val = 5;
 	}
 	if(sig == SIGUSR2){
-		;
 		val = 2;
 	}
 }
@@ -92,44 +92,48 @@ int main(int argc, char* argv[])
 			}   
 		}
 		
+
+					
 		switch(val){
-			                
+							
 		    case 1: // case d
 		    
-				if(x >= 5){
-				}
+			if(x >= 5){
+					}
 				
-				else{
-					x += step;
-					x = x + error;
-				}
-				printf("%d", val);
-				fflush(stdout);		
-				sleep(1);
-			break;					
+			else{
+				x += step;
+				x = x + error;
+			}
+								
+			sleep(1);
+		    break;					
 
 		    case 2: // case a
-		    
-				if (x <= 0){
+				    
+			if (x <= 0){
+					}
+						
+			else{
+				x -= step;
+				x = x + error;
+			}
+								
+			sleep(1);
+        	    break;
+					
+	            case  5:
+			sleep(1);
+		    break;
 				}
-				
-				else{
-					x -= step;
-					x = x + error;
-				}
-				printf("%d", val);
-				fflush(stdout);		
-				sleep(1);
-			break;
-		}
-		
-		if (x > 5.0) 
-			x = 5.0;
-		
-		if (x < 0.0) 
-			x = 0.0;
-		
-		write(fd_to_insp, &x, sizeof(x));
+	     if (x > 5.0) 
+		x = 5.0;
+			
+	     if (x < 0.0) 
+		x = 0.0;
+					
+	     write(fd_to_insp, &x, sizeof(x));
+	
 	}
 	
 	close(fd_from_comm);
