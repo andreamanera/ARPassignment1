@@ -22,8 +22,7 @@ void handler(int sig){
 	}
 	if(sig==SIGUSR2){
 		
-		z = 0.0;
-		val = 6;
+		val = 4;
 	}
 }
 
@@ -117,13 +116,8 @@ int main(int argc, char *argv[])
 						
 				sleep(1);
 			break;
-			
-			case 6: // case x
-			
-				sleep(1);
-			break;
 		}
-		
+	
 		if (z > 5.0) 
 			z = 5.0;
 		

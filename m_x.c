@@ -21,9 +21,8 @@ void handler(int sig){
 		val = 5;
 	}
 	if(sig == SIGUSR2){
-		
-		x = 0.0;
-		val = 5;
+		;
+		val = 2;
 	}
 }
 
@@ -121,13 +120,6 @@ int main(int argc, char* argv[])
 				printf("%d", val);
 				fflush(stdout);		
 				sleep(1);
-			break;
-			
-		    case 5: // case x
-			
-			sleep(1);
-			printf("%d", val);
-			fflush(stdout);
 			break;
 		}
 		

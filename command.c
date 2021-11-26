@@ -19,7 +19,7 @@
 #define CYAN "\033[36m"   
 #define WHITE "\033[37m"       
 
-int l = 0;
+int l;
 
 void handler(int sig){
 
@@ -66,11 +66,13 @@ int main(int argc, char *argv[]){
     printf(YELLOW "To STOP z axis, press Z\n");
     printf(YELLOW "To STOP x axis, press X\n");
     printf("\n");
+	
     disable_waiting_for_enter();
     
     int fd_to_mx;
     int fd_to_mz;
     int fd_to_wd;
+	int fd_to_inspec;
 
 	int d = 1;
     int a = 2;
@@ -99,8 +101,10 @@ int main(int argc, char *argv[]){
     fd_to_mx = open("/tmp/x", O_WRONLY);
     fd_to_mz = open("/tmp/z", O_WRONLY);
     fd_to_wd = open("tmp/cwd", O_WRONLY);
+	fd_to_inspec = open("tmp/cti", O_WRONLY);
     
     write(fd_to_wd, &pid_command, sizeof(pid_command));
+	write(fd_to_inspec, &pid_command, sizeof(pid_command));
     
     // Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) 
 	
@@ -108,17 +112,18 @@ int main(int argc, char *argv[]){
 	
 		ch = getchar();
 		
+	
 		switch(l){
-
-		case 1:
-			printf(RED "COMMAND CONSOLE DISABLED!!\n");
-			fflush(stdout);
+		
+			case 1:
+				printf(RED "COMMAND CONSOLE DISABLED!!\n");
+				fflush(stdout);
 	        break;
 	        
-	        case 0:
+		}
+		
 	        
-	        
-		switch(ch){
+	    switch(ch){
 
 		    case 119: // case w
 				printf(GREEN "Z INCREASE\n");
@@ -161,15 +166,14 @@ int main(int argc, char *argv[]){
 				write(fd_to_mx, &x, sizeof(ch));
 				kill(pid_wd, SIGUSR1);
 		    break;
-		    
-		    
-			}
 		}
+		
 	}
 
 	close(fd_to_mx);
 	close(fd_to_mz);
 	close(fd_to_wd);
+	close(fd_to_inspec);	
 
 	return 0;
 }
