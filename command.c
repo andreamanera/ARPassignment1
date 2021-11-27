@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
     int fd_to_mx;
     int fd_to_mz;
     int fd_to_wd;
-    int fd_to_inspec;
+    //int fd_to_inspec;
 
     int d = 1;
     int a = 2;
@@ -102,27 +102,26 @@ int main(int argc, char *argv[]){
     fd_to_mx = open("/tmp/x", O_WRONLY);
     fd_to_mz = open("/tmp/z", O_WRONLY);
     fd_to_wd = open("/tmp/cwd", O_WRONLY);
+	//fd_to_inspec = open("/tmp/cti", O_WRONLY);
     
     write(fd_to_wd, &pid_command, sizeof(pid_command));
-    
-    // Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) 
+	//write(fd_to_inspec, &pid_command, sizeof(pid_command));
+
+	// Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) 
 	
 	while (1){
 	
 		ch = getchar();
 		
-	
 		switch(l){
 		
 			case 1:
 				printf("\rwe are in the reset routine\n");
 				fflush(stdout);
-	        	break;
+	        break;
 	        
-		
-	        	case 0:
-	        	    
-			    switch(ch){
+			case 0:
+	        	switch(ch){
 
 				    case 119: // case w
 						printf(GREEN "Z INCREASE\n");
@@ -166,14 +165,15 @@ int main(int argc, char *argv[]){
 						kill(pid_wd, SIGUSR1);
 				    break;
 				}
-				break;
-			}
-		
+			break;
+			
+		}
 	}
 
 	close(fd_to_mx);
 	close(fd_to_mz);
-	close(fd_to_wd);	
+	close(fd_to_wd);
+	//close(fd_to_inspec);
 
 	return 0;
 }

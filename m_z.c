@@ -12,12 +12,13 @@
 #include <sys/wait.h>
 
 int val;
-double z = 0.0;
 
-/* signals that we send from inspection needed to stop/reset motor x */
+// signals that we send from inspection needed to stop/reset motor x 
 
 void handler(int sig){
+
 	if(sig==SIGUSR1){
+
 		val = 6;
 	}
 	if(sig==SIGUSR2){
@@ -26,32 +27,37 @@ void handler(int sig){
 	}
 }
 
-/* fd_from_comm / fd_to_mx helps in identifying an open file within a process while using input/output resources like network sockets or pipes */
+// fd_from_comm / fd_to_mx helps in identifying an open file within a process while using input/output resources like network sockets or pipes 
 
-int main(int argc, char *argv[])
-{	
+int main(int argc, char *argv[]){	
 
-	/* declaration of needed variables */
+	// declaration of needed variables 
 	 
 	int fd_from_comm;
 	int fd_to_insp;
 	int retval;
+
 	double step = 0.1;
+	double z = 0.0;
+
 	struct timeval tv;
 	struct sigaction sa; 
+
 	fd_set rdset;
 
-	/* pipes opening for reading from command and writing to insp */
+	// pipes opening for reading from command and writing to insp 
 	
 	fd_from_comm = open("/tmp/z", O_RDONLY);
 	fd_to_insp = open("/tmp/inspz", O_WRONLY);
 		
 	if(fd_from_comm == -1){
+
 		printf("Error opening FIFO from command to motor z\n");
 		return(1);
 	}
 	
 	if(fd_to_insp == -1){
+
 		printf("Error opening FIFO from motor z to inspection\n");
 		return(1);
 	}
@@ -66,25 +72,28 @@ int main(int argc, char *argv[])
 		sigaction(SIGUSR1, &sa, NULL);
 		sigaction(SIGUSR2,&sa,NULL);
 	
-		/* we want to read instantly the datas from command */
+		// we want to read instantly the datas from command 
 	
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
 		
-		/* file descriptor of datas that will be ready to be READ */
+		// file descriptor of datas that will be ready to be READ 
 		
 		FD_ZERO(&rdset);
 		FD_SET(fd_from_comm, &rdset);
 		retval = select(FD_SETSIZE, &rdset, NULL, NULL, &tv);
 		
 		if (retval == -1){
+
 			perror("select()");
 		}
 		
-		/* controll that fd_from_comm is put inside rdset */
+		// controll that fd_from_comm is put inside rdset 
 		
 		else if (retval >= 0){
+
 			if(FD_ISSET(fd_from_comm, &rdset) != 0){
+
 				read(fd_from_comm, &val, sizeof(val));
 			}   
 		}
@@ -92,14 +101,15 @@ int main(int argc, char *argv[])
 		switch(val){
 							
 			case 3: // case w
-				    
 				if(z >= 5){
-					}
+					
+				}
 						
 				else{
+
 					z += step;
 					z = z + error;
-					}
+				}
 								
 				sleep(1);
 			break;					
@@ -107,29 +117,35 @@ int main(int argc, char *argv[])
 			case 4: // case s
 				    
 				if (z <= 0){
-					}
+					
+				}
 						
 				else{
+
 					z -= step;
 					z = z + error;
-					}
+				}
 								
 				sleep(1);
 			break;
 					
 			case  6:
 			  	sleep(1);
-		        break;
-			}
-			
-			if (z > 5.0) 
-				z = 5.0;
-				
-			if (z < 0.0) 
-				z = 0.0;
-				
-			write(fd_to_insp, &z, sizeof(z));		
+		    break;
 		}
+			
+		if (z > 5.0){
+
+			z = 5.0;
+		}
+				
+		if (z < 0.0){
+
+			z = 0.0;
+		}
+
+		write(fd_to_insp, &z, sizeof(z));		
+	}
 	
 	close(fd_from_comm);
 	close(fd_to_insp);

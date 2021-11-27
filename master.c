@@ -11,19 +11,22 @@
 #include <time.h>
 #include <sys/wait.h>
 
-/* We create each child process that will execute the processes instead of the father process. */
+// We create each child process that will execute the processes instead of the father process. 
 
 int spawn(const char * program, char ** arg_list) {
-  pid_t child_pid = fork();
-  if (child_pid != 0){
-    return child_pid;
-  }
+	
+	pid_t child_pid = fork();
 
-  else {
-    execvp (program, arg_list);
-    fprintf (stderr, "an error occurred in execvp\n");
-    abort ();
-  }
+  	if (child_pid != 0){
+
+    	return child_pid;
+    }
+
+  	else {
+		execvp (program, arg_list);
+		fprintf (stderr, "an error occurred in execvp\n");
+		abort ();
+    }
 }
 
 int main(){
@@ -38,24 +41,25 @@ int main(){
 	char pid_motor_z[20];
 	char pid_watchdog[20];
 	
-	/* pipe's declaration */
+	// pipe's declaration 
 	
 	mkfifo("/tmp/x", 0666);
 	mkfifo("/tmp/z", 0666);
 	mkfifo("/tmp/inspx", 0666);
 	mkfifo("/tmp/inspz", 0666);
 	mkfifo("/tmp/cwd", 0666);
+	//mkfifo("/tmp/cti", 0666);
 	
-	/* arguments that i have to pass to the process that i want to execute through master's child */
+	// arguments that i have to pass to the process that i want to execute through master's child 
 	
 	char *arg_list_m_x[] = { "./m_x", "/tmp/x", NULL };
 	char *arg_list_m_z[] = { "./m_z", "/tmp/z" , NULL };
 	
-	
-	/* fork to create various child processes */
+	// fork to create various child processes 
 	
 	pid_m_x = spawn("./m_x", arg_list_m_x); 
 	pid_m_z = spawn("./m_z", arg_list_m_z);
+
 	sprintf(pid_motor_x, "%d", pid_m_x);
 	sprintf(pid_motor_z, "%d", pid_m_z);
 	
@@ -76,6 +80,7 @@ int main(){
 	unlink("/tmp/inspx");
 	unlink("/tmp/inspz");
 	unlink("/tmp/cwd");
+	//unlink("/tmp/cti");
 	
 	
 	return 0;
