@@ -159,7 +159,7 @@ int main(int argc, char* argv[]){
 
 		if (x == 0 && z == 0){
 
-			CHECK(kill(pid_command, SIGUSR1));	
+			kill(pid_command, SIGUSR1);	
 		}
 		
 		printf("\rX position: %f meter, Y position: %f meter", x, z);
