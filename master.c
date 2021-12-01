@@ -48,7 +48,7 @@ int main(){
 	mkfifo("/tmp/inspx", 0666);
 	mkfifo("/tmp/inspz", 0666);
 	mkfifo("/tmp/cwd", 0666);
-	//mkfifo("/tmp/cti", 0666);
+	mkfifo("/tmp/cti", 0666);
 	
 	// arguments that i have to pass to the process that i want to execute through master's child 
 	
@@ -70,7 +70,7 @@ int main(){
 	char *arg_list_comm[] = { "/usr/bin/konsole",  "-e", "./command", pid_watchdog, (char*)NULL };
 	pid_comm = spawn("/usr/bin/konsole", arg_list_comm);
 
-	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
+	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", "/tmp/cti", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
 	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
 	
 	wait(NULL);
@@ -80,7 +80,7 @@ int main(){
 	unlink("/tmp/inspx");
 	unlink("/tmp/inspz");
 	unlink("/tmp/cwd");
-	//unlink("/tmp/cti");
+	unlink("/tmp/cti");
 	
 	
 	return 0;

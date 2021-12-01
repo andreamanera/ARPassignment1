@@ -11,6 +11,9 @@
 #include <time.h>
 #include <sys/wait.h>
 
+#define RED "\033[31m"
+#define RESET "\033[0m"
+
 int main(int argc, char* argv[]){
 
 	printf("Inspection console, press q to stop the hoist and r to reset\n");
@@ -43,14 +46,14 @@ int main(int argc, char* argv[]){
 	pid_t pid_motor_x;
 	pid_t pid_motor_z;
 	pid_t pid_wd;
-	//pid_t pid_command;
+	pid_t pid_command;
 
 	double x;
 	double z;
 	
 	int fd_from_mx;
 	int fd_from_mz;
-	//int fd_from_comm;
+	int fd_from_comm;
 	int retval;
 
 	struct timeval tv; 
@@ -61,7 +64,7 @@ int main(int argc, char* argv[]){
 	
 	fd_from_mx = open("/tmp/inspx", O_RDONLY);
 	fd_from_mz = open("/tmp/inspz", O_RDONLY);
-	//fd_from_comm = open(argv[1], O_RDONLY);
+	fd_from_comm = open("/tmp/cti", O_RDONLY);
 			
 	if(fd_from_mx == -1){
 		printf("Error opening FIFO from motor x to inspection");
@@ -73,16 +76,24 @@ int main(int argc, char* argv[]){
 		return(1);
 	}
 
-	//if(fd_from_comm == -1){
-		//printf("Error opening FIFO from command to inspection");
-		//return(1);
-	//}
+	if(fd_from_comm == -1){
+		printf("Error opening FIFO from command to inspection");
+		return(1);
+	}
 	
 	// convert the pid from string to int 
 	
-	pid_motor_x = atoi(argv[1]);
-	pid_motor_z = atoi(argv[2]);
-	pid_wd = atoi(argv[3]);
+	pid_motor_x = atoi(argv[2]);
+	pid_motor_z = atoi(argv[3]);
+	pid_wd = atoi(argv[4]);
+
+	read(fd_from_comm, &pid_command, sizeof(pid_command));
+
+	FILE *out = fopen("debug.txt", "a");
+ 
+ 	if(out == NULL){
+        printf("Error opening FILE");
+    }
 
 	while(1){
 	
@@ -124,6 +135,10 @@ int main(int argc, char* argv[]){
 				kill(pid_wd, SIGUSR1);
 				kill(pid_motor_x, SIGUSR1);
 				kill(pid_motor_z, SIGUSR1);
+				kill(pid_command, SIGUSR1);
+			
+				fprintf(out, RED "Stop button pressed" RESET);
+				fflush(stdout);
 					
 			}
 				
@@ -132,17 +147,21 @@ int main(int argc, char* argv[]){
 				kill(pid_wd, SIGUSR1);
 				kill(pid_motor_x,SIGUSR2);
 				kill(pid_motor_z,SIGUSR2);
-				//kill(pid_command,SIGUSR2);
+				kill(pid_command,SIGUSR2);
+				
+				fprintf(out, RED "Reset button pressed" RESET);
+				fflush(stdout);
 			}
 		}
 		
 		printf("\rX position: %f meter, Y position: %f meter", x, z);
 		fflush(stdout);
+		fflush(out);
 	}
 	
 	close(fd_from_mx);
 	close(fd_from_mz);
-	//close(fd_from_comm);
+	close(fd_from_comm);
 	
 	return 0;
 }
