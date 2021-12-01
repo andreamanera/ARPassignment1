@@ -51,3 +51,7 @@ Z INCREASED
 [31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0m[31mStop button pressed[0mZ INCREASED
 [31mReset button pressed[0mZ INCREASED
 [31mReset button pressed[0mZ INCREASED
+X INCREASED
+X STOPPED
+[31mStop button pressed[0mX INCREASED
+[31mReset button pressed[0m[31mStop button pressed[0mX INCREASED

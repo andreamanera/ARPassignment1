@@ -34,7 +34,7 @@ void handler(int sig){
 
 	if(sig==SIGUSR1){
 
-		alarm(60);
+		alarm(10);
 	}
 
 	if(sig==SIGALRM){
@@ -57,7 +57,7 @@ int main(int argc, char * argv[]){
 	sa.sa_handler=&handler;
 	sa.sa_flags=SA_RESTART;
 	
-	alarm(60);
+	alarm(10);
 	
 	CHECK(sigaction(SIGUSR1, &sa, NULL));
 	CHECK(sigaction(SIGALRM,&sa,NULL));

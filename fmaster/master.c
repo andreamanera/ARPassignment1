@@ -57,12 +57,12 @@ int main(){
 	
 	// pipe's declaration 
 	
-	CHECK(mkfifo("/tmp/x", 0666));
-	CHECK(mkfifo("/tmp/z", 0666));
-	CHECK(mkfifo("/tmp/inspx", 0666));
-	CHECK(mkfifo("/tmp/inspz", 0666));
-	CHECK(mkfifo("/tmp/cwd", 0666));
-	CHECK(mkfifo("/tmp/cti", 0666));
+	mkfifo("/tmp/x", 0666);
+	mkfifo("/tmp/z", 0666);
+	mkfifo("/tmp/inspx", 0666);
+	mkfifo("/tmp/inspz", 0666);
+	mkfifo("/tmp/cwd", 0666);
+	mkfifo("/tmp/cti", 0666);
 	
 	// arguments that i have to pass to the process that i want to execute through master's child 
 	
