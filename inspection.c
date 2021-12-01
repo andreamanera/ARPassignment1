@@ -11,6 +11,20 @@
 #include <time.h>
 #include <sys/wait.h>
 
+#define CHECK(X) (                                                 \
+    {                                                              \
+        int __val = (X);                                           \
+        (__val == -1 ? (                                           \
+                           {                                       \
+                               fprintf(stderr, "ERROR ("__FILE__   \
+                                               ":%d) -- %s\n",     \
+                                       __LINE__, strerror(errno)); \
+                               exit(EXIT_FAILURE);                 \
+                               -1;                                 \
+                           })                                      \
+                     : __val);                                     \
+    })
+
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
@@ -62,24 +76,9 @@ int main(int argc, char* argv[]){
 	
 	// pipes opening 
 	
-	fd_from_mx = open("/tmp/inspx", O_RDONLY);
-	fd_from_mz = open("/tmp/inspz", O_RDONLY);
-	fd_from_comm = open("/tmp/cti", O_RDONLY);
-			
-	if(fd_from_mx == -1){
-		printf("Error opening FIFO from motor x to inspection");
-		return(1);
-	}
-	
-	if(fd_from_mz == -1){
-		printf("Error opening FIFO from motor z to inspection");
-		return(1);
-	}
-
-	if(fd_from_comm == -1){
-		printf("Error opening FIFO from command to inspection");
-		return(1);
-	}
+	CHECK(fd_from_mx = open("/tmp/inspx", O_RDONLY));
+	CHECK(fd_from_mz = open("/tmp/inspz", O_RDONLY));
+	CHECK(fd_from_comm = open("/tmp/cti", O_RDONLY));
 	
 	// convert the pid from string to int 
 	
@@ -87,7 +86,7 @@ int main(int argc, char* argv[]){
 	pid_motor_z = atoi(argv[3]);
 	pid_wd = atoi(argv[4]);
 
-	read(fd_from_comm, &pid_command, sizeof(pid_command));
+	CHECK(read(fd_from_comm, &pid_command, sizeof(pid_command)));
 
 	FILE *out = fopen("debug.txt", "a");
  
@@ -118,24 +117,26 @@ int main(int argc, char* argv[]){
 			
 			if(FD_ISSET(fd_from_mx, &rdset) != 0){
 
-				read(fd_from_mx, &x, sizeof(x));
+				CHECK(read(fd_from_mx, &x, sizeof(x)));
 			}
 			
 			if(FD_ISSET(fd_from_mz, &rdset) != 0){
 
-				read(fd_from_mz, &z, sizeof(z));
+				CHECK(read(fd_from_mz, &z, sizeof(z)));
 			}
 		}
 		
 		if (FD_ISSET(0,&rdset)>0){
-			read(0, &ch, sizeof(char));
+			CHECK(read(0, &ch, sizeof(char)));
 		
 			if(ch == 'q'){
+				
+				printf(RED "\nEmergency stop pressed!" RESET "\n");
 
-				kill(pid_wd, SIGUSR1);
-				kill(pid_motor_x, SIGUSR1);
-				kill(pid_motor_z, SIGUSR1);
-				kill(pid_command, SIGUSR1);
+				CHECK(kill(pid_wd, SIGUSR1));
+				CHECK(kill(pid_motor_x, SIGUSR1));
+				CHECK(kill(pid_motor_z, SIGUSR1));
+				CHECK(kill(pid_command, SIGUSR1));
 			
 				fprintf(out, RED "Stop button pressed" RESET);
 				fflush(stdout);
@@ -144,14 +145,21 @@ int main(int argc, char* argv[]){
 				
 			if(ch == 'r'){
 
-				kill(pid_wd, SIGUSR1);
-				kill(pid_motor_x,SIGUSR2);
-				kill(pid_motor_z,SIGUSR2);
-				kill(pid_command,SIGUSR2);
+				printf(RED "\nEmergency reset pressed!" RESET "\n");
+
+				CHECK(kill(pid_wd, SIGUSR1));
+				CHECK(kill(pid_motor_x,SIGUSR2));
+				CHECK(kill(pid_motor_z,SIGUSR2));
+				CHECK(kill(pid_command,SIGUSR2));
 				
 				fprintf(out, RED "Reset button pressed" RESET);
 				fflush(stdout);
 			}
+		}
+
+		if (x == 0 && z == 0){
+
+			CHECK(kill(pid_command, SIGUSR1));	
 		}
 		
 		printf("\rX position: %f meter, Y position: %f meter", x, z);
@@ -159,9 +167,9 @@ int main(int argc, char* argv[]){
 		fflush(out);
 	}
 	
-	close(fd_from_mx);
-	close(fd_from_mz);
-	close(fd_from_comm);
+	CHECK(close(fd_from_mx));
+	CHECK(close(fd_from_mz));
+	CHECK(close(fd_from_comm));
 	
 	return 0;
 }

@@ -11,6 +11,20 @@
 #include <time.h>
 #include <sys/wait.h>
 
+#define CHECK(X) (                                                 \
+    {                                                              \
+        int __val = (X);                                           \
+        (__val == -1 ? (                                           \
+                           {                                       \
+                               fprintf(stderr, "ERROR ("__FILE__   \
+                                               ":%d) -- %s\n",     \
+                                       __LINE__, strerror(errno)); \
+                               exit(EXIT_FAILURE);                 \
+                               -1;                                 \
+                           })                                      \
+                     : __val);                                     \
+    })
+
 // We create each child process that will execute the processes instead of the father process. 
 
 int spawn(const char * program, char ** arg_list) {
@@ -23,7 +37,7 @@ int spawn(const char * program, char ** arg_list) {
     }
 
   	else {
-		execvp (program, arg_list);
+		CHECK(execvp(program, arg_list));
 		fprintf (stderr, "an error occurred in execvp\n");
 		abort ();
     }
@@ -43,12 +57,12 @@ int main(){
 	
 	// pipe's declaration 
 	
-	mkfifo("/tmp/x", 0666);
-	mkfifo("/tmp/z", 0666);
-	mkfifo("/tmp/inspx", 0666);
-	mkfifo("/tmp/inspz", 0666);
-	mkfifo("/tmp/cwd", 0666);
-	mkfifo("/tmp/cti", 0666);
+	CHECK(mkfifo("/tmp/x", 0666));
+	CHECK(mkfifo("/tmp/z", 0666));
+	CHECK(mkfifo("/tmp/inspx", 0666));
+	CHECK(mkfifo("/tmp/inspz", 0666));
+	CHECK(mkfifo("/tmp/cwd", 0666));
+	CHECK(mkfifo("/tmp/cti", 0666));
 	
 	// arguments that i have to pass to the process that i want to execute through master's child 
 	
@@ -73,14 +87,14 @@ int main(){
 	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", "/tmp/cti", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
 	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
 	
-	wait(NULL);
+	CHECK(wait(NULL));
 	
-	unlink("/tmp/x");
-	unlink("/tmp/z");
-	unlink("/tmp/inspx");
-	unlink("/tmp/inspz");
-	unlink("/tmp/cwd");
-	unlink("/tmp/cti");
+	CHECK(unlink("/tmp/x"));
+	CHECK(unlink("/tmp/z"));
+	CHECK(unlink("/tmp/inspx"));
+	CHECK(unlink("/tmp/inspz"));
+	CHECK(unlink("/tmp/cwd"));
+	CHECK(unlink("/tmp/cti"));
 	
 	
 	return 0;

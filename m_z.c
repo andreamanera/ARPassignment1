@@ -11,6 +11,20 @@
 #include <time.h>
 #include <sys/wait.h>
 
+#define CHECK(X) (                                                 \
+    {                                                              \
+        int __val = (X);                                           \
+        (__val == -1 ? (                                           \
+                           {                                       \
+                               fprintf(stderr, "ERROR ("__FILE__   \
+                                               ":%d) -- %s\n",     \
+                                       __LINE__, strerror(errno)); \
+                               exit(EXIT_FAILURE);                 \
+                               -1;                                 \
+                           })                                      \
+                     : __val);                                     \
+    })
+
 int val;
 
 // signals that we send from inspection needed to stop/reset motor x 
@@ -47,20 +61,8 @@ int main(int argc, char *argv[]){
 
 	// pipes opening for reading from command and writing to insp 
 	
-	fd_from_comm = open("/tmp/z", O_RDONLY);
-	fd_to_insp = open("/tmp/inspz", O_WRONLY);
-		
-	if(fd_from_comm == -1){
-
-		printf("Error opening FIFO from command to motor z\n");
-		return(1);
-	}
-	
-	if(fd_to_insp == -1){
-
-		printf("Error opening FIFO from motor z to inspection\n");
-		return(1);
-	}
+	CHECK(fd_from_comm = open("/tmp/z", O_RDONLY));
+	CHECK(fd_to_insp = open("/tmp/inspz", O_WRONLY));
 	
 	while(1){
 		
@@ -69,8 +71,8 @@ int main(int argc, char *argv[]){
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_handler=&handler;
 		sa.sa_flags=SA_RESTART;
-		sigaction(SIGUSR1, &sa, NULL);
-		sigaction(SIGUSR2,&sa,NULL);
+		CHECK(sigaction(SIGUSR1, &sa, NULL));
+		CHECK(sigaction(SIGUSR2,&sa,NULL));
 	
 		// we want to read instantly the datas from command 
 	
@@ -94,7 +96,7 @@ int main(int argc, char *argv[]){
 
 			if(FD_ISSET(fd_from_comm, &rdset) != 0){
 
-				read(fd_from_comm, &val, sizeof(val));
+				CHECK(read(fd_from_comm, &val, sizeof(val)));
 			}   
 		}
 					
@@ -111,7 +113,7 @@ int main(int argc, char *argv[]){
 					z = z + error;
 				}
 								
-				sleep(1);
+				CHECK(sleep(1));
 			break;					
 
 			case 4: // case s
@@ -126,11 +128,11 @@ int main(int argc, char *argv[]){
 					z = z + error;
 				}
 								
-				sleep(1);
+				CHECK(sleep(1));
 			break;
 					
 			case  6:
-			  	sleep(1);
+			  	CHECK(sleep(1));
 		    break;
 		}
 			
@@ -144,11 +146,11 @@ int main(int argc, char *argv[]){
 			z = 0.0;
 		}
 
-		write(fd_to_insp, &z, sizeof(z));		
+		CHECK(write(fd_to_insp, &z, sizeof(z)));		
 	}
 	
-	close(fd_from_comm);
-	close(fd_to_insp);
+	CHECK(close(fd_from_comm));
+	CHECK(close(fd_to_insp));
 	
 	return 0;
 }
