@@ -35,7 +35,6 @@ fi
 
 echo "Program installation on $1 ... ";
 export X=$1;
-cp info.txt $1;
 unzip sources.zip -d $1;
 
 # Compile of all the .c files and we put the executables inside a new 
@@ -43,8 +42,6 @@ unzip sources.zip -d $1;
 
 echo "Compiling files on sources ...";
 cd $1
-
-cd sources
 
 cd fcommand
 gcc -o command command.c
@@ -78,7 +75,6 @@ mv fmotor_x/m_x executables
 mv fmotor_z/m_z executables
 mv fmaster/master executables
 mv fwatchdog/watchdog executables
-cd ..
 cd ..
 
 echo "Run the program with ./run.sh ";

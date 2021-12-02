@@ -1,3 +1,3 @@
-cd $X/sources/executables
+cd $X/executables
 ./master
 
