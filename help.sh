@@ -1,3 +1,5 @@
+#!/bin/bash
+
 more -d info.txt
 more -d ./sources/fmaster/master.txt
 more -d ./sources/fcommand/command.txt

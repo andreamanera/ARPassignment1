@@ -3,6 +3,7 @@
 # In order to install the program you have to run the install.sh.
 # If there isn't any first argument, which is <pathname>, there will be an echo 
 # containing the information to how install the program
+# <pathname> is the folder you have to create in which you insert all processes' folders.
 
 if [ $# -eq 0 ]
 
@@ -17,9 +18,8 @@ fi
 if [ ! -d $1 ]
 
 then
- echo "There is an ERROR: $1 directory does NOT exist!!!");
- while true; 
- do
+ echo "There is an ERROR: $1 directory does NOT exist!";
+ while true; do
   read -p "Do you want to create $1 directory? [y/n] " yn
   case $yn in
    [y]* ) mkdir $1; break;;
@@ -29,12 +29,12 @@ then
  done
 fi
 
-# Thanks to the following lines we will unzip the surces.script. 
+# Thanks to the following lines we will unzip the sources.script. 
 # We export the path of the folder in order to use it in a
 # file bash.
 
 echo "Program installation on $1 ... ";
-export X = $1;
+export X=$1;
 cp info.txt $1;
 unzip sources.zip -d $1;
 
@@ -44,44 +44,41 @@ unzip sources.zip -d $1;
 echo "Compiling files on sources ...";
 cd $1
 
+cd sources
+
 cd fcommand
 gcc -o command command.c
-mv command ..
 cd ..
 
 cd finspection
 gcc -o inspection inspection.c
-mv inspection ..
 cd ..
 
 cd fmotor_x
 gcc -o m_x m_x.c
-mv m_x ..
 cd ..
 
 cd fmotor_z
 gcc -o m_z m_z.c
-mv m_z ..
 cd ..
 
 cd fmaster
 gcc -o master master.c
-mv master ..
 cd ..
 
 cd fwatchdog
 gcc -o watchdog wd.c
-mv watchdog ..
 cd ..
 
 mkdir executables
 
-mv command executables
-mv inspection executables
-mv motor_x executables
-mv motor_z executables
-mv master executables
-mv watchdog executables
+mv fcommand/command executables
+mv finspection/inspection executables
+mv fmotor_x/m_x executables
+mv fmotor_z/m_z executables
+mv fmaster/master executables
+mv fwatchdog/watchdog executables
+cd ..
 cd ..
 
 echo "Run the program with ./run.sh ";
