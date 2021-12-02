@@ -9,7 +9,6 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <time.h>
-#include <sys/wait.h>
 
 #define CHECK(X) (                                                 \
     {                                                              \
@@ -35,6 +34,7 @@ void handler(int sig){
 
 		val = 6;
 	}
+
 	if(sig==SIGUSR2){
 		
 		val = 4;
@@ -68,6 +68,8 @@ int main(int argc, char *argv[]){
 		
 		double error = (double) rand() /(double) (RAND_MAX/0.001);
 		
+		// only in motor the signal will change something 
+
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_handler=&handler;
 		sa.sa_flags=SA_RESTART;

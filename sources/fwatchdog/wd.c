@@ -39,9 +39,9 @@ void handler(int sig){
 
 	if(sig==SIGALRM){
 
-		CHECK(kill(pid_m_x, SIGUSR2));
-		CHECK(kill(pid_m_z, SIGUSR2));
-		CHECK(kill(pid_command, SIGUSR2));
+		kill(pid_m_x, SIGUSR2);
+		kill(pid_m_z, SIGUSR2);
+		kill(pid_command, SIGUSR2);
 	}
 }
 

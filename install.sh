@@ -29,14 +29,14 @@ then
  done
 fi
 
-# Thanks to the following lines we will unzip the src.script. 
+# Thanks to the following lines we will unzip the surces.script. 
 # We export the path of the folder in order to use it in a
 # file bash.
 
 echo "Program installation on $1 ... ";
 export X = $1;
 cp info.txt $1;
-unzip src.zip -d $1;
+unzip sources.zip -d $1;
 
 # Compile of all the .c files and we put the executables inside a new 
 # Putting the executables inside a new folder.

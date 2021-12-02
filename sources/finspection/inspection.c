@@ -30,6 +30,14 @@
 
 int main(int argc, char* argv[]){
 
+	FILE *out = fopen("logfile.txt", "a");
+ 
+ 	if(out == NULL){
+        printf("Error opening FILE");
+    }
+
+	fprintf(out, "PID ./inspection: %d\n", getpid()); fflush(out);
+
 	printf("Inspection console, press q to stop the hoist and r to reset\n");
 
 	static struct termios oldt;
@@ -51,7 +59,11 @@ int main(int argc, char* argv[]){
 		atexit(restore_terminal_settings); // Make sure settings will be restored when program ends  
 	}
 
-	// declaration of neede variables 
+	// Setting the current time
+	time_t current_time;
+    struct timeval tv={0,0};
+
+	// declaration of needed variables 
 	
 	disable_waiting_for_enter();
 	
@@ -69,16 +81,15 @@ int main(int argc, char* argv[]){
 	int fd_from_mz;
 	int fd_from_comm;
 	int retval;
-
-	struct timeval tv; 
-
+	int waiting = 0;
+ 
 	fd_set rdset;
 	
 	// pipes opening 
 	
-	CHECK(fd_from_mx = open("/tmp/inspx", O_RDONLY));
-	CHECK(fd_from_mz = open("/tmp/inspz", O_RDONLY));
-	CHECK(fd_from_comm = open("/tmp/cti", O_RDONLY));
+	fd_from_mx = open("/tmp/inspx", O_RDONLY);
+	fd_from_mz = open("/tmp/inspz", O_RDONLY);
+	fd_from_comm = open("/tmp/cti", O_RDONLY);
 	
 	// convert the pid from string to int 
 	
@@ -88,14 +99,10 @@ int main(int argc, char* argv[]){
 
 	CHECK(read(fd_from_comm, &pid_command, sizeof(pid_command)));
 
-	FILE *out = fopen("debug.txt", "a");
- 
- 	if(out == NULL){
-        printf("Error opening FILE");
-    }
-
 	while(1){
-	
+		
+		time(&current_time);
+
 		FD_ZERO(&rdset);
 		FD_SET(fd_from_mx, &rdset);
 		FD_SET(fd_from_mz, &rdset);
@@ -117,12 +124,12 @@ int main(int argc, char* argv[]){
 			
 			if(FD_ISSET(fd_from_mx, &rdset) != 0){
 
-				CHECK(read(fd_from_mx, &x, sizeof(x)));
+				read(fd_from_mx, &x, sizeof(x));
 			}
 			
 			if(FD_ISSET(fd_from_mz, &rdset) != 0){
 
-				CHECK(read(fd_from_mz, &z, sizeof(z)));
+				read(fd_from_mz, &z, sizeof(z));
 			}
 		}
 		
@@ -132,13 +139,14 @@ int main(int argc, char* argv[]){
 			if(ch == 'q'){
 				
 				printf(RED "\nEmergency stop pressed!" RESET "\n");
+				fprintf(out, "Emergency stop pressed!     Time:  %s", ctime(&current_time));
+                fflush(out);
 
 				CHECK(kill(pid_wd, SIGUSR1));
 				CHECK(kill(pid_motor_x, SIGUSR1));
 				CHECK(kill(pid_motor_z, SIGUSR1));
 				CHECK(kill(pid_command, SIGUSR1));
 			
-				fprintf(out, RED "Stop button pressed" RESET);
 				fflush(stdout);
 					
 			}
@@ -146,13 +154,14 @@ int main(int argc, char* argv[]){
 			if(ch == 'r'){
 
 				printf(RED "\nEmergency reset pressed!" RESET "\n");
+				fprintf(out, "Emergency reset pressed!     Time:  %s", ctime(&current_time));
+                fflush(out);
 
 				CHECK(kill(pid_wd, SIGUSR1));
 				CHECK(kill(pid_motor_x,SIGUSR2));
 				CHECK(kill(pid_motor_z,SIGUSR2));
 				CHECK(kill(pid_command,SIGUSR2));
-				
-				fprintf(out, RED "Reset button pressed" RESET);
+		
 				fflush(stdout);
 			}
 		}
@@ -162,9 +171,16 @@ int main(int argc, char* argv[]){
 			kill(pid_command, SIGUSR1);	
 		}
 		
-		printf("\rX position: %f meter, Y position: %f meter", x, z);
+		printf("\rX position: %f meter, Z position: %f meter", x, z);
 		fflush(stdout);
-		fflush(out);
+
+		if(waiting%50000==0){ 
+			
+			fprintf(out, "Position x: %f, Position z: %f     Time:  %s", x, z, ctime(&current_time));
+			fflush(out);
+		}
+  		waiting++;
+		
 	}
 	
 	CHECK(close(fd_from_mx));

@@ -9,7 +9,6 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <time.h>
-#include <sys/wait.h>
 
 #define CHECK(X) (                                                 \
     {                                                              \
@@ -45,11 +44,22 @@ int spawn(const char * program, char ** arg_list) {
 
 int main(){
 
+	FILE *out = fopen("logfile.txt", "w");
+    if(out == NULL){
+
+        printf("Error opening FILE");
+    }
+	
+	fclose(out);
+
 	pid_t pid_comm;
 	pid_t pid_m_x;
 	pid_t pid_m_z; 
 	pid_t pid_insp; 
 	pid_t pid_wd;
+	pid_t pid_master;
+
+	pid_master=getpid();
 	
 	char pid_motor_x[20];
 	char pid_motor_z[20];
@@ -86,6 +96,19 @@ int main(){
 
 	char *arg_list_insp[] = { "/usr/bin/konsole",  "-e", "./inspection", "/tmp/cti", pid_motor_x, pid_motor_z, pid_watchdog, (char*)NULL };
 	pid_insp = spawn("/usr/bin/konsole", arg_list_insp);
+
+	FILE *out2 = fopen("logfile.txt", "a");
+    if(out2 == NULL){
+
+        printf("Error opening FILE");
+    }
+
+	fprintf(out2, "PID ./master: %d\n", pid_master);
+  	fprintf(out2, "PID ./motor_x: %d\n", pid_m_x);
+  	fprintf(out2, "PID ./motor_z: %d\n", pid_m_z);
+  	fprintf(out2, "PID ./watchdog: %d\n", pid_wd);
+	fflush(out2);
+  	fclose(out2);
 	
 	CHECK(wait(NULL));
 	
@@ -95,7 +118,11 @@ int main(){
 	CHECK(unlink("/tmp/inspz"));
 	CHECK(unlink("/tmp/cwd"));
 	CHECK(unlink("/tmp/cti"));
-	
+
+	CHECK(kill(pid_insp, SIGKILL));
+	CHECK(kill(pid_wd, SIGKILL));
+	CHECK(kill(pid_m_x, SIGKILL));
+	CHECK(kill(pid_m_z, SIGKILL));
 	
 	return 0;
 

@@ -66,6 +66,15 @@ void handler(int sig){
 // Main in which we developed the principal code of the command console.
 
 int main(int argc, char *argv[]){
+
+	FILE *out = fopen("logfile.txt", "a");
+ 
+ 	if(out == NULL){
+		 
+        printf("Error opening FILE");
+    }
+
+	fprintf(out, "PID ./command: %d\n", getpid()); fflush(out);
 	
 	// We had put this structure code just to avoid pressing 
 	// "Enter" every time we want to increase/decrease x and z of our joist
@@ -92,6 +101,11 @@ int main(int argc, char *argv[]){
 		tcsetattr(0, TCSANOW, &newt);  
 		atexit(restore_terminal_settings);  
 	}
+
+
+	// Setting the current time
+	time_t current_time;
+    struct timeval tv={0,0};
      
 	// Just some aesthetic stuff.
 
@@ -101,7 +115,7 @@ int main(int argc, char *argv[]){
     printf(BLUE "CCCC  OOOO  M     M  M     M  A     A  N    N  DDDD " RESET "\n");
 	printf("\n");
 	printf("\n");
-    printf(GREEN "This is a robot simulator which simulates the movements of a joist. If you want to move it, press the following buttons on the keyboard.\n");
+    printf(GREEN "This is a robot simulator which simulates the movements of a hoist. If you want to move it, press the following buttons on the keyboard.\n");
 	printf("\n");
     printf(YELLOW "To move UP, press W" RESET "\n");
     printf(YELLOW "To move DOWN, press S" RESET "\n");
@@ -167,26 +181,21 @@ int main(int argc, char *argv[]){
 	// of what we press and do. We use the fopen() function to open the debug.txt 
 	// and with fprintf we write in the file the specific comment.
 
-	FILE *out = fopen("debug.txt", "a");
- 
- 	if(out == NULL){
-		 
-        printf("Error opening FILE");
-    }
-
 	// Key reading loop: entering the loop of putting char from keyboard, without exit from program (no return in infinite while loop) 
 	
-	while (1){
+	while ((ch = getchar()) != 'e'){
 
 		// Function getchar() to get the button pressed on the keyboard
-		ch = getchar();
+		// If "e" is pressed, we exit while loop and the program terminate successfully.
+		// Then master kills other processes
 		
-
 		// Through the use of "l" we can understand in which state we are.
 		// if we are in the reset state (case 1), the system is resetting and no command can be
 		// insert, except for the q command---> stop command (in case we have to stop the system in an EMERGENCY
 		// during the resetting routine), until the reset has terminated. Indeed in case 0 we are in the normal situation in which 
 		// we can use the command console, checking through a switch() which button we have entered on the keyboard.
+
+		time(&current_time);
 
 		switch(l){
 		
@@ -201,64 +210,70 @@ int main(int argc, char *argv[]){
 
 			case 0:
 
+				
 	        	switch(ch){
 
 				    case 119: // case w
 						printf(GREEN "Z INCREASE" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "Z INCREASED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mz, &w, sizeof(ch)));
 						CHECK(kill(pid_wd, SIGUSR1));
-						fprintf(out, "Z INCREASED\n");
-                        fflush(out);
 				    break;
 
 				    case 115: // case s
 						printf(RED "Z DECREASE" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "Z DECREASED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mz, &s, sizeof(ch)));
 						CHECK(kill(pid_wd, SIGUSR1));
-						fprintf(out, "Z DECREASED\n");
-                        fflush(out);
+						
 				    break;
 
 				    case 122 :// case z
 						printf(CYAN "Z STOP" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "Z STOPPED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mz, &z, sizeof(ch)));
 						CHECK(kill(pid_wd, SIGUSR1));
-						fprintf(out, "Z STOPPED\n");
-                        fflush(out);
 				    break;
 						
 				    case 100: // case d
 						printf(WHITE "X INCREASE" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "X INCREASED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mx, &d, sizeof(ch)));
 						CHECK(kill(pid_wd, SIGUSR1));
-						fprintf(out, "X INCREASED\n");
-                        fflush(out);
 				    break;
 
 				    case 97: // case a
 						printf(MAGENTA "X DECREASE" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "X DECREASED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mx, &a, sizeof(ch)));
 						kill(pid_wd, SIGUSR1);
-						fprintf(out, "X DECREASED\n");
-                        fflush(out);
+						
 				    break;
 
 				    case 120: // case x
 						printf(BLUE "X STOP" RESET "\n");
 						fflush(stdout);
+						fprintf(out, "X STOPPED     Time:  %s", ctime(&current_time));
+                        fflush(out);
 						CHECK(write(fd_to_mx, &x, sizeof(ch)));
 						CHECK(kill(pid_wd, SIGUSR1));
-						fprintf(out, "X STOPPED\n");
-                        fflush(out);
 				    break;
 
 					default: 
 						printf(RED "Wrong command!" RESET "\n");
+						fprintf(out, "Wrong command pressed!     Time:  %s", ctime(&current_time));
+                        fflush(out);
+				    break;
 				}
 			break;
 			
