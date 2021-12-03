@@ -1,0 +1,42 @@
+##########################################INFO##########################################
+--------------------ADVANCED AND ROBOT PROGRAMMING FIRST ASSIGNMENT--------------------
+
+info.txt file contains useful informations about the project.
+
+Andrea Manera (4668710)
+Lorenzo Benedetti (4679798)
+
+First assignment of advanced and robot programming class concerns the development
+of a robot simulator which simulates the behaviour of a Hoist.
+
+Inside the .zip archive are contained five files, three shell scripts the
+sources.zip archive and the text file you are reading. In the sources archive
+you find 6 directories wich contain the .c file and also a .txt file with 
+informations about each process.
+
+First of all to unzip the sources archive and install the program using the command:
+
+source ./install.sh <pathname>
+
+It will create a folder called <pathname> inside which are located the folders that
+were in sources.zip, there will also be a folder with the executables of each process.
+
+After that run the program with the command:
+
+./run.sh
+
+During the execution hoist position and the given commands are written in the logfile
+that you can find in the logfile directory
+
+----------------------------------SIMULATOR BEHAVIOR-----------------------------------
+
+The hoist simulator has 2 d.o.f. and two different consoles allows the user to activate
+the hoist. 
+The command console is where the user can give the command to move the hoist along the
+two directions, while the inspection console is where the position is printed. In the
+inspection console the user can also give two commands one to stop the movement and 
+one to reset the position. Other two processes are thought to simulate the motors.
+There is also a watchdog  wich checks the previous 4 processes periodically, and sends 
+a reset in case all processes did nothing for 60 seconds.
+Processes communicate using named pipes and signals, everything is managed by the master
+process.
